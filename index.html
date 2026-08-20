@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic et Rapport Système</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🛠️ Dashboard de Diagnostic Système</h1>
+        <p>Outil de vérification et rapport technique - Projet DEP 5385</p>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <h2>💻 Informations Système</h2>
+            <div id="sys-info">
+                <p><strong>Nom PC:</strong> WORKSTATION-01</p>
+                <p><strong>OS:</strong> Windows 11 Pro (64-bit)</p>
+                <p><strong>RAM Totale:</strong> 16 GB</p>
+                <p><strong>Uptime:</strong> 3 jours, 5 heures</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>💾 Statut des Disques</h2>
+            <div class="disk-item">
+                <span>Disque C: (SSD)</span>
+                <div class="progress-bar">
+                    <div class="progress danger" style="width: 92%;">92%</div>
+                </div>
+                <span class="status-tag red">🔴 ALERTE CRITIQUE</span>
+            </div>
+            <div class="disk-item">
+                <span>Disque D: (Data)</span>
+                <div class="progress-bar">
+                    <div class="progress ok" style="width: 45%;">45%</div>
+                </div>
+                <span class="status-tag green">🟢 Normal</span>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>🔥 Top 5 Processus (Mémoire)</h2>
+            <ul class="process-list">
+                <li><span>chrome.exe</span> <strong>1 450 MB</strong></li>
+                <li><span>msedgewebview2.exe</span> <strong>820 MB</strong></li>
+                <li><span>powershell.exe</span> <strong>310 MB</strong></li>
+                <li><span>sqlservr.exe</span> <strong>290 MB</strong></li>
+                <li><span>explorer.exe</span> <strong>180 MB</strong></li>
+            </ul>
+        </section>
+
+        <section class="card full-width">
+            <h2>📄 Actions & Exportation</h2>
+            <button id="btn-generate" onclick="generateReport()">Générer Rapport (.TXT)</button>
+            <button id="btn-refresh" onclick="refreshData()">Lancer Diagnostic</button>
+            <pre id="log-output">Prêt pour le diagnostic...</pre>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
