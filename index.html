@@ -3,62 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnostic et Rapport Système</title>
+    <title>SysAdmin Dashboard Pro - Diagnostic Système</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <h1>🛠️ Dashboard de Diagnostic Système</h1>
-        <p>Outil de vérification et rapport technique - Projet DEP 5385</p>
-    </header>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-server"></i>
+            <span>SysAdmin<strong>Diagnostic Pro</strong></span>
+        </div>
+        <div class="sys-badge">
+            <span class="pulse-dot"></span>
+            <span id="sys-status">Système Opérationnel</span>
+        </div>
+    </nav>
 
-    <main class="container">
-        <section class="card">
-            <h2>💻 Informations Système</h2>
-            <div id="sys-info">
-                <p><strong>Nom PC:</strong> WORKSTATION-01</p>
-                <p><strong>OS:</strong> Windows 11 Pro (64-bit)</p>
-                <p><strong>RAM Totale:</strong> 16 GB</p>
-                <p><strong>Uptime:</strong> 3 jours, 5 heures</p>
+    <div class="container">
+        <header class="hero-banner">
+            <div>
+                <h1>Centre de Diagnostic & Reporting</h1>
+                <p>DEP 5385 - Soutien Informatique | Analyseur de Performance Système</p>
             </div>
-        </section>
+            <div class="actions-header">
+                <button class="btn btn-primary" onclick="runFullDiagnostic()">
+                    <i class="fa-solid fa-play"></i> Lancer Diagnostic Complet
+                </button>
+            </div>
+        </header>
 
-        <section class="card">
-            <h2>💾 Statut des Disques</h2>
-            <div class="disk-item">
-                <span>Disque C: (SSD)</span>
-                <div class="progress-bar">
-                    <div class="progress danger" style="width: 92%;">92%</div>
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <i class="fa-solid fa-desktop metric-icon"></i>
+                <div>
+                    <h4>Station de Travail</h4>
+                    <p id="pc-name">WORKSTATION-C13</p>
                 </div>
-                <span class="status-tag red">🔴 ALERTE CRITIQUE</span>
             </div>
-            <div class="disk-item">
-                <span>Disque D: (Data)</span>
-                <div class="progress-bar">
-                    <div class="progress ok" style="width: 45%;">45%</div>
+            <div class="metric-card">
+                <i class="fa-brands fa-windows metric-icon"></i>
+                <div>
+                    <h4>Système d'Exploitation</h4>
+                    <p id="pc-os">Windows 11 Pro (64-bit)</p>
                 </div>
-                <span class="status-tag green">🟢 Normal</span>
+            </div>
+            <div class="metric-card">
+                <i class="fa-solid fa-clock metric-icon"></i>
+                <div>
+                    <h4>Temps d'Activité (Uptime)</h4>
+                    <p id="pc-uptime">4 jours, 12 heures</p>
+                </div>
+            </div>
+            <div class="metric-card">
+                <i class="fa-solid fa-memory metric-icon"></i>
+                <div>
+                    <h4>Utilisation RAM</h4>
+                    <p id="pc-ram">8.4 GB / 16 GB (52%)</p>
+                </div>
             </div>
         </section>
 
-        <section class="card">
-            <h2>🔥 Top 5 Processus (Mémoire)</h2>
-            <ul class="process-list">
-                <li><span>chrome.exe</span> <strong>1 450 MB</strong></li>
-                <li><span>msedgewebview2.exe</span> <strong>820 MB</strong></li>
-                <li><span>powershell.exe</span> <strong>310 MB</strong></li>
-                <li><span>sqlservr.exe</span> <strong>290 MB</strong></li>
-                <li><span>explorer.exe</span> <strong>180 MB</strong></li>
-            </ul>
-        </section>
+        <section class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-hard-drive"></i> Analyse des Disques</h3>
+                    <span class="tag">Direct-CIM</span>
+                </div>
+                <div class="card-body" id="disks-container">
+                    </div>
+            </div>
 
-        <section class="card full-width">
-            <h2>📄 Actions & Exportation</h2>
-            <button id="btn-generate" onclick="generateReport()">Générer Rapport (.TXT)</button>
-            <button id="btn-refresh" onclick="refreshData()">Lancer Diagnostic</button>
-            <pre id="log-output">Prêt pour le diagnostic...</pre>
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-microchip"></i> Top 5 Processus (RAM)</h3>
+                    <span class="tag">WorkingSet</span>
+                </div>
+                <div class="card-body">
+                    <ul class="process-list" id="process-list">
+                        </ul>
+                </div>
+            </div>
+
+            <div class="card full-width">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-triangle-exclamation"></i> Services Automatiques Arrêtés</h3>
+                    <button class="btn-sm" onclick="checkServices()"><i class="fa-solid fa-rotate"></i> Revérifier</button>
+                </div>
+                <div class="card-body">
+                    <div id="services-container">
+                        </div>
+                </div>
+            </div>
+
+            <div class="card full-width console-card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-terminal"></i> Console d'Exécution & Journalisation</h3>
+                    <div class="export-buttons">
+                        <button class="btn btn-secondary" onclick="exportTxtReport()">
+                            <i class="fa-solid fa-file-lines"></i> Export TXT
+                        </button>
+                        <button class="btn btn-accent" onclick="exportHtmlReport()">
+                            <i class="fa-solid fa-file-code"></i> Rapport HTML Imprimable
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <pre id="console-output">> Initialisation du module de diagnostic...
+> Prêt pour l'analyse système. Cliquez sur "Lancer Diagnostic Complet".</pre>
+                </div>
+            </div>
         </section>
-    </main>
+    </div>
+
+    <footer>
+        <p>Projet Fin de Compétence C13 - Réalisé pour le cours de Hadhba Sahbani | CFP des Carrefours</p>
+    </footer>
 
     <script src="app.js"></script>
 </body>
