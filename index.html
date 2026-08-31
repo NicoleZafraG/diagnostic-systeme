@@ -14,6 +14,7 @@
             --accent-hover: #1d4ed8;
             --status-good: #22c55e;
             --status-warn: #eab308;
+            --status-danger: #ef4444;
             --border-color: #334155;
         }
 
@@ -38,6 +39,9 @@
             padding: 1rem 2rem;
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo {
@@ -104,7 +108,6 @@
             background-color: var(--accent-color);
             padding: 0.5rem 1rem;
             border-radius: 20px;
-            cursor: pointer;
         }
 
         /* Contenedor Principal */
@@ -119,9 +122,31 @@
             text-align: center;
         }
 
+        .btn-scan {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-scan:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-scan:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+        }
+
         .section-title {
             font-size: 1.5rem;
-            margin: 2rem 0 1rem 0;
+            margin: 2.5rem 0 1rem 0;
             padding-bottom: 0.5rem;
             border-bottom: 2px solid var(--accent-color);
             display: inline-block;
@@ -160,9 +185,12 @@
             font-size: 0.8rem;
             padding: 0.2rem 0.6rem;
             border-radius: 12px;
-            background-color: rgba(34, 197, 94, 0.2);
-            color: var(--status-good);
+            background-color: rgba(148, 163, 184, 0.2);
+            color: var(--text-secondary);
         }
+
+        .status-good { background-color: rgba(34, 197, 94, 0.2); color: var(--status-good); }
+        .status-warn { background-color: rgba(234, 179, 8, 0.2); color: var(--status-warn); }
 
         .card-description {
             font-size: 0.9rem;
@@ -184,7 +212,30 @@
             height: 100%;
             background-color: var(--accent-color);
             width: 0%;
-            transition: width 1s ease-in-out;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Tabla de Reportes */
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        .reports-table th, .reports-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .reports-table th {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            font-weight: 600;
         }
     </style>
 </head>
@@ -199,10 +250,9 @@
                 <div class="dropdown-content">
                     <a href="#hardware">Hardware</a>
                     <a href="#software">Software</a>
-                    <a href="#">Historial</a>
                 </div>
             </div>
-            <a href="#">Reports</a>
+            <a href="#reports">Reports</a>
             <a href="#">Support</a>
         </nav>
         <div class="user-profile">
@@ -213,7 +263,8 @@
     <main>
         <div class="dashboard-header">
             <h1>Panel de Diagnóstico Técnico</h1>
-            <p style="color: var(--text-secondary); margin-top: 0.5rem;">Estado general del sistema y componentes clave</p>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem;">Haz clic en el botón para evaluar hardware y software en tiempo real.</p>
+            <button id="scanBtn" class="btn-scan" onclick="startScan()">Start Scan</button>
         </div>
 
         <h2 id="hardware" class="section-title">Componentes de Hardware</h2>
@@ -223,13 +274,13 @@
                 <div>
                     <div class="card-header">
                         <span class="card-title">Procesador (CPU)</span>
-                        <span class="status-badge">Normal</span>
+                        <span id="cpu-status" class="status-badge">Pendiente</span>
                     </div>
                     <p class="card-description">Revisa la velocidad, el uso actual y la estabilidad del chip principal cuando trabaja al máximo.</p>
                 </div>
                 <div>
-                    <small style="color: var(--text-secondary);">Uso de CPU: 35%</small>
-                    <div class="metric-bar"><div class="metric-fill" style="width: 35%;"></div></div>
+                    <small id="cpu-text" style="color: var(--text-secondary);">Uso de CPU: --%</small>
+                    <div class="metric-bar"><div id="cpu-bar" class="metric-fill"></div></div>
                 </div>
             </div>
 
@@ -237,13 +288,13 @@
                 <div>
                     <div class="card-header">
                         <span class="card-title">Memoria RAM</span>
-                        <span class="status-badge">Correcto</span>
+                        <span id="ram-status" class="status-badge">Pendiente</span>
                     </div>
                     <p class="card-description">Comprueba si hay errores de lectura o escritura en los módulos de memoria temporal.</p>
                 </div>
                 <div>
-                    <small style="color: var(--text-secondary);">Uso de RAM: 58%</small>
-                    <div class="metric-bar"><div class="metric-fill" style="width: 58%;"></div></div>
+                    <small id="ram-text" style="color: var(--text-secondary);">Uso de RAM: --%</small>
+                    <div class="metric-bar"><div id="ram-bar" class="metric-fill"></div></div>
                 </div>
             </div>
 
@@ -251,13 +302,13 @@
                 <div>
                     <div class="card-header">
                         <span class="card-title">Almacenamiento (SSD/HDD)</span>
-                        <span class="status-badge">Saludable</span>
+                        <span id="disk-status" class="status-badge">Pendiente</span>
                     </div>
                     <p class="card-description">Evalúa la salud general, los sectores dañados y la velocidad de lectura de tus unidades de datos.</p>
                 </div>
                 <div>
-                    <small style="color: var(--text-secondary);">Espacio usado: 42%</small>
-                    <div class="metric-bar"><div class="metric-fill" style="width: 42%;"></div></div>
+                    <small id="disk-text" style="color: var(--text-secondary);">Espacio usado: --%</small>
+                    <div class="metric-bar"><div id="disk-bar" class="metric-fill"></div></div>
                 </div>
             </div>
 
@@ -265,13 +316,13 @@
                 <div>
                     <div class="card-header">
                         <span class="card-title">Tarjeta Gráfica (GPU)</span>
-                        <span class="status-badge">Estable</span>
+                        <span id="gpu-status" class="status-badge">Pendiente</span>
                     </div>
                     <p class="card-description">Verifica el funcionamiento del chip de video y su memoria dedicada al mostrar imágenes pesadas o juegos.</p>
                 </div>
                 <div>
-                    <small style="color: var(--text-secondary);">Carga de GPU: 12%</small>
-                    <div class="metric-bar"><div class="metric-fill" style="width: 12%;"></div></div>
+                    <small id="gpu-text" style="color: var(--text-secondary);">Carga de GPU: --%</small>
+                    <div class="metric-bar"><div id="gpu-bar" class="metric-fill"></div></div>
                 </div>
             </div>
 
@@ -279,7 +330,7 @@
                 <div>
                     <div class="card-header">
                         <span class="card-title">Placa Base y Puertos</span>
-                        <span class="status-badge">OK</span>
+                        <span id="mobo-status" class="status-badge">Pendiente</span>
                     </div>
                     <p class="card-description">Comprueba que la tarjeta principal reconozca todos los elementos y que los puertos USB o de video funcionen bien.</p>
                 </div>
@@ -289,13 +340,13 @@
                 <div>
                     <div class="card-header">
                         <span class="card-title">Temperaturas y Ventilación</span>
-                        <span class="status-badge">Óptimo</span>
+                        <span id="temp-status" class="status-badge">Pendiente</span>
                     </div>
                     <p class="card-description">Mide el calor de los componentes y la velocidad de los ventiladores para evitar apagones por exceso de temperatura.</p>
                 </div>
                 <div>
-                    <small style="color: var(--text-secondary);">Temperatura CPU: 45°C</small>
-                    <div class="metric-bar"><div class="metric-fill" style="width: 45%; background-color: var(--status-good);"></div></div>
+                    <small id="temp-text" style="color: var(--text-secondary);">Temperatura CPU: --°C</small>
+                    <div class="metric-bar"><div id="temp-bar" class="metric-fill"></div></div>
                 </div>
             </div>
 
@@ -307,7 +358,7 @@
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Sistema Operativo</span>
-                    <span class="status-badge">Sin fallos</span>
+                    <span id="os-status" class="status-badge">Pendiente</span>
                 </div>
                 <p class="card-description">Revisar la integridad de los archivos del sistema, las actualizaciones pendientes y el registro de eventos en busca de fallos críticos.</p>
             </div>
@@ -315,7 +366,7 @@
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Rendimiento y Procesos</span>
-                    <span class="status-badge">Optimizado</span>
+                    <span id="proc-status" class="status-badge">Pendiente</span>
                 </div>
                 <p class="card-description">Analizar el uso excesivo de la memoria RAM, el procesador o el disco por parte de programas en segundo plano.</p>
             </div>
@@ -323,7 +374,7 @@
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Seguridad</span>
-                    <span class="status-badge">Protegido</span>
+                    <span id="sec-status" class="status-badge">Pendiente</span>
                 </div>
                 <p class="card-description">Comprobar la presencia de virus, programas maliciosos (malware) y el estado activo del antivirus o cortafuegos.</p>
             </div>
@@ -331,7 +382,7 @@
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Controladores (Drivers)</span>
-                    <span class="status-badge">Actualizados</span>
+                    <span id="drv-status" class="status-badge">Pendiente</span>
                 </div>
                 <p class="card-description">Verificar que los controladores de video, red y audio estén actualizados y sin conflictos de hardware.</p>
             </div>
@@ -339,13 +390,118 @@
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Programas Instalados</span>
-                    <span class="status-badge">Revisado</span>
+                    <span id="apps-status" class="status-badge">Pendiente</span>
                 </div>
                 <p class="card-description">Identificar aplicaciones obsoletas, software basura (bloatware) o conflictos entre programas que afecten el arranque.</p>
             </div>
 
         </div>
+
+        <h2 id="reports" class="section-title">Reports (Historial de Diagnósticos)</h2>
+        <table class="reports-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha y Hora</th>
+                    <th>Estado de Hardware</th>
+                    <th>Estado de Software</th>
+                    <th>Resultado General</th>
+                </tr>
+            </thead>
+            <tbody id="reportsBody">
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-secondary);">No hay diagnósticos registrados. Haz clic en "Start Scan".</td>
+                </tr>
+            </tbody>
+        </table>
     </main>
 
+    <script>
+        let reportCount = 0;
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function startScan() {
+            const btn = document.getElementById('scanBtn');
+            btn.disabled = true;
+            btn.innerText = "Escaneando...";
+
+            setTimeout(() => {
+                // Simulación de valores de Hardware
+                const cpuVal = getRandomInt(15, 85);
+                const ramVal = getRandomInt(30, 90);
+                const diskVal = getRandomInt(20, 75);
+                const gpuVal = getRandomInt(5, 60);
+                const tempVal = getRandomInt(35, 78);
+
+                // Actualizar barras y textos de Hardware
+                document.getElementById('cpu-bar').style.width = cpuVal + '%';
+                document.getElementById('cpu-text').innerText = `Uso de CPU: ${cpuVal}%`;
+                updateBadge('cpu-status', cpuVal > 80 ? 'Alto Uso' : 'Normal', cpuVal > 80 ? 'status-warn' : 'status-good');
+
+                document.getElementById('ram-bar').style.width = ramVal + '%';
+                document.getElementById('ram-text').innerText = `Uso de RAM: ${ramVal}%`;
+                updateBadge('ram-status', ramVal > 85 ? 'Elevado' : 'Correcto', ramVal > 85 ? 'status-warn' : 'status-good');
+
+                document.getElementById('disk-bar').style.width = diskVal + '%';
+                document.getElementById('disk-text').innerText = `Espacio usado: ${diskVal}%`;
+                updateBadge('disk-status', 'Saludable', 'status-good');
+
+                document.getElementById('gpu-bar').style.width = gpuVal + '%';
+                document.getElementById('gpu-text').innerText = `Carga de GPU: ${gpuVal}%`;
+                updateBadge('gpu-status', 'Estable', 'status-good');
+
+                document.getElementById('temp-bar').style.width = tempVal + '%';
+                document.getElementById('temp-text').innerText = `Temperatura CPU: ${tempVal}°C`;
+                updateBadge('temp-status', tempVal > 75 ? 'Temperatura Alta' : 'Óptimo', tempVal > 75 ? 'status-warn' : 'status-good');
+
+                updateBadge('mobo-status', 'OK', 'status-good');
+
+                // Actualizar badges de Software
+                updateBadge('os-status', 'Sin fallos', 'status-good');
+                updateBadge('proc-status', 'Optimizado', 'status-good');
+                updateBadge('sec-status', 'Protegido', 'status-good');
+                updateBadge('drv-status', 'Actualizados', 'status-good');
+                updateBadge('apps-status', 'Revisado', 'status-good');
+
+                // Agregar nuevo registro a la tabla de Reports
+                addReportRecord(tempVal > 75 || ramVal > 85 ? 'Advertencia' : 'Excelente');
+
+                btn.disabled = false;
+                btn.innerText = "Start Scan";
+            }, 1200);
+        }
+
+        function updateBadge(id, text, className) {
+            const badge = document.getElementById(id);
+            badge.innerText = text;
+            badge.className = `status-badge ${className}`;
+        }
+
+        function addReportRecord(overallStatus) {
+            const tableBody = document.getElementById('reportsBody');
+            
+            if (reportCount === 0) {
+                tableBody.innerHTML = '';
+            }
+
+            reportCount++;
+            const now = new Date();
+            const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>#RPT-${1000 + reportCount}</td>
+                <td>${dateStr}</td>
+                <td><span class="status-badge status-good">Completado</span></td>
+                <td><span class="status-badge status-good">Completado</span></td>
+                <td><span class="status-badge ${overallStatus === 'Excelente' ? 'status-good' : 'status-warn'}">${overallStatus}</span></td>
+            `;
+
+            tableBody.insertBefore(row, tableBody.firstChild);
+        }
+    </script>
 </body>
 </html>
