@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZAGO inc - Outil de Diagnostic et Rapport Système</title>
+    <title>ZAGO inc - Diagnostic et Rapport Système</title>
     <style>
         :root {
             --bg-main: #0f172a;
@@ -34,13 +34,38 @@
             min-height: 100vh;
         }
 
+        /* --- SELECTOR DE IDIOMA --- */
+        .lang-select {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .lang-select:focus {
+            border-color: var(--accent-cyan);
+        }
+
         /* --- VISTAS DE AUTENTICACIÓN --- */
         .auth-wrapper {
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
+        }
+
+        .auth-lang-picker {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .auth-container {
@@ -599,69 +624,85 @@
 <body>
 
     <div id="login-page" class="auth-wrapper">
+        <div class="auth-lang-picker">
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">🌐</span>
+            <select class="lang-select" onchange="changeLanguage(this.value)">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
+        </div>
         <div class="auth-container">
             <div class="logo-area">
                 <span class="logo-icon">🛡️</span>
                 <h1>ZAGO inc</h1>
-                <p>SYSTEM DIAGNOSTICS & REPORTING</p>
+                <p data-i18n="tagline">DIAGNÓSTICO Y REPORTES DE SISTEMA</p>
             </div>
 
             <form id="form-login">
                 <div class="form-group">
-                    <label for="login-email">Email</label>
+                    <label for="login-email" data-i18n="emailLabel">Correo Electrónico</label>
                     <input type="email" id="login-email" placeholder="ej. usuario@empresa.com" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="login-password">Contraseña</label>
+                    <label for="login-password" data-i18n="passLabel">Contraseña</label>
                     <input type="password" id="login-password" placeholder="••••••••" required>
                 </div>
 
-                <button type="submit" class="btn-submit">Iniciar Sesión</button>
+                <button type="submit" class="btn-submit" data-i18n="loginBtn">Iniciar Sesión</button>
             </form>
 
             <div class="auth-footer">
-                ¿No tienes una cuenta?
-                <button class="btn-link" onclick="showPage('register-page')">Create Account</button>
+                <span data-i18n="noAccountText">¿No tienes una cuenta?</span>
+                <button class="btn-link" onclick="showPage('register-page')" data-i18n="createAccountBtn">Crear Cuenta</button>
             </div>
         </div>
     </div>
 
     <div id="register-page" class="auth-wrapper hidden">
+        <div class="auth-lang-picker">
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">🌐</span>
+            <select class="lang-select" onchange="changeLanguage(this.value)">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
+        </div>
         <div class="auth-container">
             <div class="logo-area">
                 <span class="logo-icon">👤</span>
-                <h1>Crear Cuenta</h1>
-                <p>REGISTRO DE NUEVO CLIENTE</p>
+                <h1 data-i18n="regTitle">Crear Cuenta</h1>
+                <p data-i18n="regSub">REGISTRO DE NUEVO CLIENTE</p>
             </div>
 
             <form id="form-register">
                 <div class="form-group">
-                    <label for="reg-nombre">Nombre</label>
+                    <label for="reg-nombre" data-i18n="nameLabel">Nombre</label>
                     <input type="text" id="reg-nombre" placeholder="Juan" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="reg-apellido">Apellido</label>
+                    <label for="reg-apellido" data-i18n="lastnameLabel">Apellido</label>
                     <input type="text" id="reg-apellido" placeholder="Pérez" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="reg-email">Email</label>
+                    <label for="reg-email" data-i18n="emailLabel">Correo Electrónico</label>
                     <input type="email" id="reg-email" placeholder="juan.perez@email.com" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="reg-password">Contraseña</label>
+                    <label for="reg-password" data-i18n="passLabel">Contraseña</label>
                     <input type="password" id="reg-password" placeholder="••••••••" required>
                 </div>
 
-                <button type="submit" class="btn-submit" style="background-color: var(--accent-green); color: #0f172a;">Crear Cuenta y Continuar</button>
+                <button type="submit" class="btn-submit" style="background-color: var(--accent-green); color: #0f172a;" data-i18n="regSubmitBtn">Crear Cuenta y Continuar</button>
             </form>
 
             <div class="auth-footer">
-                ¿Ya tienes una cuenta?
-                <button class="btn-link" onclick="showPage('login-page')">Iniciar Sesión</button>
+                <span data-i18n="hasAccountText">¿Ya tienes una cuenta?</span>
+                <button class="btn-link" onclick="showPage('login-page')" data-i18n="loginBtn">Iniciar Sesión</button>
             </div>
         </div>
     </div>
@@ -669,43 +710,48 @@
     <header id="main-header" class="hidden">
         <div class="logo" onclick="showPage('diagnostics-page')">ZAGO inc</div>
         <nav>
-            <a onclick="showPage('diagnostics-page')">Inicio</a>
+            <a onclick="showPage('diagnostics-page')" data-i18n="navHome">Inicio</a>
             <div class="dropdown">
-                <button class="dropbtn">Opciones ▾</button>
+                <button class="dropbtn"><span data-i18n="navOptions">Opciones</span> ▾</button>
                 <div class="dropdown-content">
-                    <a href="#hardware" onclick="showPage('diagnostics-page')">Hardware</a>
-                    <a href="#software" onclick="showPage('diagnostics-page')">Software</a>
+                    <a href="#hardware" onclick="showPage('diagnostics-page')" data-i18n="navHardware">Hardware</a>
+                    <a href="#software" onclick="showPage('diagnostics-page')" data-i18n="navSoftware">Software</a>
                 </div>
             </div>
-            <a href="#reports" onclick="showPage('diagnostics-page')">Reports</a>
-            <a id="nav-support" onclick="showPage('support-page')">Support</a>
+            <a href="#reports" onclick="showPage('diagnostics-page')" data-i18n="navReports">Reportes</a>
+            <a id="nav-support" onclick="showPage('support-page')" data-i18n="navSupport">Soporte</a>
         </nav>
         <div class="user-profile">
+            <select class="lang-select" onchange="changeLanguage(this.value)">
+                <option value="es">ES</option>
+                <option value="en">EN</option>
+                <option value="fr">FR</option>
+            </select>
             <div id="user-display" class="user-name-badge">Mi Cuenta</div>
-            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            <button class="btn-logout" onclick="logout()" data-i18n="logoutBtn">Cerrar Sesión</button>
         </div>
     </header>
 
     <div id="diagnostics-page" class="hidden">
         <main>
             <div class="dashboard-header">
-                <h1>Panel de Diagnóstico Técnico</h1>
-                <p style="color: var(--text-secondary); margin-top: 0.5rem;">Haz clic en el botón para evaluar hardware y software en tiempo real.</p>
-                <button id="scanBtn" class="btn-scan" onclick="startScan()">Start Scan</button>
+                <h1 data-i18n="dashTitle">Panel de Diagnóstico Técnico</h1>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;" data-i18n="dashSub">Haz clic en el botón para evaluar hardware y software en tiempo real.</p>
+                <button id="scanBtn" class="btn-scan" onclick="startScan()" data-i18n="scanBtn">Iniciar Escaneo</button>
             </div>
 
-            <h2 id="hardware" class="section-title">Componentes de Hardware</h2>
+            <h2 id="hardware" class="section-title" data-i18n="sectionHardware">Componentes de Hardware</h2>
             <div class="grid-container">
                 <div class="card">
                     <div>
                         <div class="card-header">
-                            <span class="card-title">Procesador (CPU)</span>
-                            <span id="cpu-status" class="status-badge">Pendiente</span>
+                            <span class="card-title" data-i18n="cardCpu">Procesador (CPU)</span>
+                            <span id="cpu-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                         </div>
-                        <p class="card-description">Revisa la velocidad, el uso actual y la estabilidad del chip principal cuando trabaja al máximo.</p>
+                        <p class="card-description" data-i18n="descCpu">Revisa la velocidad, el uso actual y la estabilidad del chip principal cuando trabaja al máximo.</p>
                     </div>
                     <div>
-                        <small id="cpu-text" style="color: var(--text-secondary);">Uso de CPU: --%</small>
+                        <small id="cpu-text" style="color: var(--text-secondary);"><span data-i18n="usageCpu">Uso de CPU</span>: --%</small>
                         <div class="metric-bar"><div id="cpu-bar" class="metric-fill"></div></div>
                     </div>
                 </div>
@@ -713,13 +759,13 @@
                 <div class="card">
                     <div>
                         <div class="card-header">
-                            <span class="card-title">Memoria RAM</span>
-                            <span id="ram-status" class="status-badge">Pendiente</span>
+                            <span class="card-title" data-i18n="cardRam">Memoria RAM</span>
+                            <span id="ram-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                         </div>
-                        <p class="card-description">Comprueba si hay errores de lectura o escritura en los módulos de memoria temporal.</p>
+                        <p class="card-description" data-i18n="descRam">Comprueba si hay errores de lectura o escritura en los módulos de memoria temporal.</p>
                     </div>
                     <div>
-                        <small id="ram-text" style="color: var(--text-secondary);">Uso de RAM: --%</small>
+                        <small id="ram-text" style="color: var(--text-secondary);"><span data-i18n="usageRam">Uso de RAM</span>: --%</small>
                         <div class="metric-bar"><div id="ram-bar" class="metric-fill"></div></div>
                     </div>
                 </div>
@@ -727,13 +773,13 @@
                 <div class="card">
                     <div>
                         <div class="card-header">
-                            <span class="card-title">Almacenamiento (SSD/HDD)</span>
-                            <span id="disk-status" class="status-badge">Pendiente</span>
+                            <span class="card-title" data-i18n="cardDisk">Almacenamiento (SSD/HDD)</span>
+                            <span id="disk-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                         </div>
-                        <p class="card-description">Evalúa la salud general, los sectores dañados y la velocidad de lectura de tus unidades de datos.</p>
+                        <p class="card-description" data-i18n="descDisk">Evalúa la salud general, los sectores dañados y la velocidad de lectura de tus unidades de datos.</p>
                     </div>
                     <div>
-                        <small id="disk-text" style="color: var(--text-secondary);">Espacio usado: --%</small>
+                        <small id="disk-text" style="color: var(--text-secondary);"><span data-i18n="usageDisk">Espacio usado</span>: --%</small>
                         <div class="metric-bar"><div id="disk-bar" class="metric-fill"></div></div>
                     </div>
                 </div>
@@ -741,13 +787,13 @@
                 <div class="card">
                     <div>
                         <div class="card-header">
-                            <span class="card-title">Tarjeta Gráfica (GPU)</span>
-                            <span id="gpu-status" class="status-badge">Pendiente</span>
+                            <span class="card-title" data-i18n="cardGpu">Tarjeta Gráfica (GPU)</span>
+                            <span id="gpu-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                         </div>
-                        <p class="card-description">Verifica el funcionamiento del chip de video y su memoria dedicada al mostrar imágenes pesadas o juegos.</p>
+                        <p class="card-description" data-i18n="descGpu">Verifica el funcionamiento del chip de video y su memoria dedicada al mostrar imágenes pesadas o juegos.</p>
                     </div>
                     <div>
-                        <small id="gpu-text" style="color: var(--text-secondary);">Carga de GPU: --%</small>
+                        <small id="gpu-text" style="color: var(--text-secondary);"><span data-i18n="usageGpu">Carga de GPU</span>: --%</small>
                         <div class="metric-bar"><div id="gpu-bar" class="metric-fill"></div></div>
                     </div>
                 </div>
@@ -755,88 +801,88 @@
                 <div class="card">
                     <div>
                         <div class="card-header">
-                            <span class="card-title">Placa Base y Puertos</span>
-                            <span id="mobo-status" class="status-badge">Pendiente</span>
+                            <span class="card-title" data-i18n="cardMobo">Placa Base y Puertos</span>
+                            <span id="mobo-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                         </div>
-                        <p class="card-description">Comprueba que la tarjeta principal reconozca todos los elementos y que los puertos USB o de video funcionen bien.</p>
+                        <p class="card-description" data-i18n="descMobo">Comprueba que la tarjeta principal reconozca todos los elementos y que los puertos USB o de video funcionen bien.</p>
                     </div>
                 </div>
 
                 <div class="card">
                     <div>
                         <div class="card-header">
-                            <span class="card-title">Temperaturas y Ventilación</span>
-                            <span id="temp-status" class="status-badge">Pendiente</span>
+                            <span class="card-title" data-i18n="cardTemp">Temperaturas y Ventilación</span>
+                            <span id="temp-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                         </div>
-                        <p class="card-description">Mide el calor de los componentes y la velocidad de los ventiladores para evitar apagones por exceso de temperatura.</p>
+                        <p class="card-description" data-i18n="descTemp">Mide el calor de los componentes y la velocidad de los ventiladores para evitar apagones por exceso de temperatura.</p>
                     </div>
                     <div>
-                        <small id="temp-text" style="color: var(--text-secondary);">Temperatura CPU: --°C</small>
+                        <small id="temp-text" style="color: var(--text-secondary);"><span data-i18n="usageTemp">Temperatura CPU</span>: --°C</small>
                         <div class="metric-bar"><div id="temp-bar" class="metric-fill"></div></div>
                     </div>
                 </div>
             </div>
 
-            <h2 id="software" class="section-title">Análisis de Software</h2>
+            <h2 id="software" class="section-title" data-i18n="sectionSoftware">Análisis de Software</h2>
             <div class="grid-container">
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">Sistema Operativo</span>
-                        <span id="os-status" class="status-badge">Pendiente</span>
+                        <span class="card-title" data-i18n="cardOs">Sistema Operativo</span>
+                        <span id="os-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                     </div>
-                    <p class="card-description">Revisar la integridad de los archivos del sistema, las actualizaciones pendientes y el registro de eventos en busca de fallos críticos.</p>
+                    <p class="card-description" data-i18n="descOs">Revisar la integridad de los archivos del sistema, las actualizaciones pendientes y el registro de eventos en busca de fallos críticos.</p>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">Rendimiento y Procesos</span>
-                        <span id="proc-status" class="status-badge">Pendiente</span>
+                        <span class="card-title" data-i18n="cardProc">Rendimiento y Procesos</span>
+                        <span id="proc-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                     </div>
-                    <p class="card-description">Analizar el uso excesivo de la memoria RAM, el procesador o el disco por parte de programas en segundo plano.</p>
+                    <p class="card-description" data-i18n="descProc">Analizar el uso excesivo de la memoria RAM, el procesador o el disco por parte de programas en segundo plano.</p>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">Seguridad</span>
-                        <span id="sec-status" class="status-badge">Pendiente</span>
+                        <span class="card-title" data-i18n="cardSec">Seguridad</span>
+                        <span id="sec-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                     </div>
-                    <p class="card-description">Comprobar la presencia de virus, programas maliciosos (malware) y el estado activo del antivirus o cortafuegos.</p>
+                    <p class="card-description" data-i18n="descSec">Comprobar la presencia de virus, programas maliciosos (malware) y el estado activo del antivirus o cortafuegos.</p>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">Controladores (Drivers)</span>
-                        <span id="drv-status" class="status-badge">Pendiente</span>
+                        <span class="card-title" data-i18n="cardDrv">Controladores (Drivers)</span>
+                        <span id="drv-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                     </div>
-                    <p class="card-description">Verificar que los controladores de video, red y audio estén actualizados y sin conflictos de hardware.</p>
+                    <p class="card-description" data-i18n="descDrv">Verificar que los controladores de video, red y audio estén actualizados y sin conflictos de hardware.</p>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">Programas Instalados</span>
-                        <span id="apps-status" class="status-badge">Pendiente</span>
+                        <span class="card-title" data-i18n="cardApps">Programas Instalados</span>
+                        <span id="apps-status" class="status-badge" data-i18n="statusPending">Pendiente</span>
                     </div>
-                    <p class="card-description">Identificar aplicaciones obsoletas, software basura (bloatware) o conflictos entre programas que afecten el arranque.</p>
+                    <p class="card-description" data-i18n="descApps">Identificar aplicaciones obsoletas, software basura (bloatware) o conflictos entre programas que afecten el arranque.</p>
                 </div>
             </div>
 
             <div id="reports" class="reports-table-header">
-                <h2 class="section-title" style="margin: 0; border: none;">Reports (Historial de Diagnósticos)</h2>
-                <button class="btn-clear" onclick="clearReportsHistory()">Borrar Historial</button>
+                <h2 class="section-title" style="margin: 0; border: none;" data-i18n="sectionReports">Reportes (Historial de Diagnósticos)</h2>
+                <button class="btn-clear" onclick="clearReportsHistory()" data-i18n="clearHistoryBtn">Borrar Historial</button>
             </div>
             <table class="reports-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Fecha y Hora</th>
-                        <th>Estado Hardware</th>
-                        <th>Estado Software</th>
-                        <th>Acciones</th>
+                        <th data-i18n="thId">ID</th>
+                        <th data-i18n="thDate">Fecha y Hora</th>
+                        <th data-i18n="thHw">Estado Hardware</th>
+                        <th data-i18n="thSw">Estado Software</th>
+                        <th data-i18n="thActions">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="reportsBody">
                     <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-secondary);">No hay diagnósticos registrados. Haz clic en "Start Scan".</td>
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary);" data-i18n="noReports">No hay diagnósticos registrados. Haz clic en "Iniciar Escaneo".</td>
                     </tr>
                 </tbody>
             </table>
@@ -860,18 +906,18 @@
                     <circle cx="100" cy="162" r="6" fill="#22c55e"/>
                 </svg>
                 <br>
-                <div class="robot-greeting">👋 ¡Hola! Soy ZAGO-Bot. Tengo acceso completo a todos los diagnósticos de tu cuenta.</div>
+                <div class="robot-greeting" data-i18n="robotGreeting">👋 ¡Hola! Soy ZAGO-Bot. Tengo acceso completo a todos los diagnósticos de tu cuenta.</div>
             </div>
 
             <div class="chat-box">
                 <div id="chatMessages" class="chat-messages">
-                    <div class="message bot">
+                    <div class="message bot" data-i18n="chatWelcome">
                         ¡Hola! Puedo analizar cualquiera de tus diagnósticos guardados. Escribe el ID del reporte (ej. <b>RPT-1001</b>) o pregúntame por el estado general de tu equipo.
                     </div>
                 </div>
                 <form id="chatForm" class="chat-input-area" onsubmit="handleSendMessage(event)">
-                    <input type="text" id="userInput" placeholder="Ej: Analiza RPT-1001 o ¿cómo está mi CPU?" autocomplete="off" required>
-                    <button type="submit" class="btn-send">Enviar</button>
+                    <input type="text" id="userInput" placeholder="Ej: Analiza RPT-1001 o ¿cómo está mi CPU?" data-i18n-ph="chatPlaceholder" autocomplete="off" required>
+                    <button type="submit" class="btn-send" data-i18n="sendBtn">Enviar</button>
                 </form>
             </div>
         </main>
@@ -880,34 +926,335 @@
     <div id="reportModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitle">Detalle del Diagnóstico</h3>
+                <h3 id="modalTitle" data-i18n="modalTitle">Detalle del Diagnóstico</h3>
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
             <p id="modalDate" style="color: var(--text-secondary); margin-bottom: 1rem;"></p>
             
             <div class="detail-group">
-                <h4>Resultados de Hardware</h4>
-                <div class="detail-item"><span>Uso de CPU:</span><strong id="m-cpu">--</strong></div>
-                <div class="detail-item"><span>Uso de RAM:</span><strong id="m-ram">--</strong></div>
-                <div class="detail-item"><span>Almacenamiento Usado:</span><strong id="m-disk">--</strong></div>
-                <div class="detail-item"><span>Carga de GPU:</span><strong id="m-gpu">--</strong></div>
-                <div class="detail-item"><span>Temperatura CPU:</span><strong id="m-temp">--</strong></div>
-                <div class="detail-item"><span>Placa Base y Puertos:</span><strong id="m-mobo">--</strong></div>
+                <h4 data-i18n="modalHwResults">Resultados de Hardware</h4>
+                <div class="detail-item"><span data-i18n="usageCpu">Uso de CPU</span>:<strong id="m-cpu">--</strong></div>
+                <div class="detail-item"><span data-i18n="usageRam">Uso de RAM</span>:<strong id="m-ram">--</strong></div>
+                <div class="detail-item"><span data-i18n="usageDisk">Espacio usado</span>:<strong id="m-disk">--</strong></div>
+                <div class="detail-item"><span data-i18n="usageGpu">Carga de GPU</span>:<strong id="m-gpu">--</strong></div>
+                <div class="detail-item"><span data-i18n="usageTemp">Temperatura CPU</span>:<strong id="m-temp">--</strong></div>
+                <div class="detail-item"><span data-i18n="cardMobo">Placa Base y Puertos</span>:<strong id="m-mobo">--</strong></div>
             </div>
 
             <div class="detail-group">
-                <h4>Resultados de Software</h4>
-                <div class="detail-item"><span>Sistema Operativo:</span><strong id="m-os">--</strong></div>
-                <div class="detail-item"><span>Rendimiento y Procesos:</span><strong id="m-proc">--</strong></div>
-                <div class="detail-item"><span>Seguridad:</span><strong id="m-sec">--</strong></div>
-                <div class="detail-item"><span>Controladores:</span><strong id="m-drv">--</strong></div>
-                <div class="detail-item"><span>Programas Instalados:</span><strong id="m-apps">--</strong></div>
+                <h4 data-i18n="modalSwResults">Resultados de Software</h4>
+                <div class="detail-item"><span data-i18n="cardOs">Sistema Operativo</span>:<strong id="m-os">--</strong></div>
+                <div class="detail-item"><span data-i18n="cardProc">Rendimiento y Procesos</span>:<strong id="m-proc">--</strong></div>
+                <div class="detail-item"><span data-i18n="cardSec">Seguridad</span>:<strong id="m-sec">--</strong></div>
+                <div class="detail-item"><span data-i18n="cardDrv">Controladores</span>:<strong id="m-drv">--</strong></div>
+                <div class="detail-item"><span data-i18n="cardApps">Programas Instalados</span>:<strong id="m-apps">--</strong></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Gestor de navegación
+        // DICCIONARIO DE TRADUCCIONES (i18n)
+        const translations = {
+            es: {
+                tagline: "DIAGNÓSTICO Y REPORTES DE SISTEMA",
+                emailLabel: "Correo Electrónico",
+                passLabel: "Contraseña",
+                loginBtn: "Iniciar Sesión",
+                noAccountText: "¿No tienes una cuenta?",
+                createAccountBtn: "Crear Cuenta",
+                regTitle: "Crear Cuenta",
+                regSub: "REGISTRO DE NUEVO CLIENTE",
+                nameLabel: "Nombre",
+                lastnameLabel: "Apellido",
+                regSubmitBtn: "Crear Cuenta y Continuar",
+                hasAccountText: "¿Ya tienes una cuenta?",
+                navHome: "Inicio",
+                navOptions: "Opciones",
+                navHardware: "Hardware",
+                navSoftware: "Software",
+                navReports: "Reportes",
+                navSupport: "Soporte",
+                myAccount: "Mi Cuenta",
+                logoutBtn: "Cerrar Sesión",
+                dashTitle: "Panel de Diagnóstico Técnico",
+                dashSub: "Haz clic en el botón para evaluar hardware y software en tiempo real.",
+                scanBtn: "Iniciar Escaneo",
+                scanningBtn: "Escaneando...",
+                sectionHardware: "Componentes de Hardware",
+                cardCpu: "Procesador (CPU)",
+                descCpu: "Revisa la velocidad, el uso actual y la estabilidad del chip principal cuando trabaja al máximo.",
+                usageCpu: "Uso de CPU",
+                cardRam: "Memoria RAM",
+                descRam: "Comprueba si hay errores de lectura o escritura en los módulos de memoria temporal.",
+                usageRam: "Uso de RAM",
+                cardDisk: "Almacenamiento (SSD/HDD)",
+                descDisk: "Evalúa la salud general, los sectores dañados y la velocidad de lectura de tus unidades de datos.",
+                usageDisk: "Espacio usado",
+                cardGpu: "Tarjeta Gráfica (GPU)",
+                descGpu: "Verifica el funcionamiento del chip de video y su memoria dedicada al mostrar imágenes pesadas o juegos.",
+                usageGpu: "Carga de GPU",
+                cardMobo: "Placa Base y Puertos",
+                descMobo: "Comprueba que la tarjeta principal reconozca todos los elementos y que los puertos USB o de video funcionen bien.",
+                cardTemp: "Temperaturas y Ventilación",
+                descTemp: "Mide el calor de los componentes y la velocidad de los ventiladores para evitar apagones por exceso de temperatura.",
+                usageTemp: "Temperatura CPU",
+                sectionSoftware: "Análisis de Software",
+                cardOs: "Sistema Operativo",
+                descOs: "Revisar la integridad de los archivos del sistema, las actualizaciones pendientes y el registro de eventos en busca de fallos críticos.",
+                cardProc: "Rendimiento y Procesos",
+                descProc: "Analizar el uso excesivo de la memoria RAM, el procesador o el disco por parte de programas en segundo plano.",
+                cardSec: "Seguridad",
+                descSec: "Comprobar la presencia de virus, programas maliciosos (malware) y el estado activo del antivirus o cortafuegos.",
+                cardDrv: "Controladores (Drivers)",
+                descDrv: "Verificar que los controladores de video, red y audio estén actualizados y sin conflictos de hardware.",
+                cardApps: "Programas Instalados",
+                descApps: "Identificar aplicaciones obsoletas, software basura (bloatware) o conflictos entre programas que afecten el arranque.",
+                sectionReports: "Reportes (Historial de Diagnósticos)",
+                clearHistoryBtn: "Borrar Historial",
+                thId: "ID",
+                thDate: "Fecha y Hora",
+                thHw: "Estado Hardware",
+                thSw: "Estado Software",
+                thActions: "Acciones",
+                noReports: "No hay diagnósticos registrados. Haz clic en 'Iniciar Escaneo'.",
+                viewDetailBtn: "Ver Detalle",
+                analysisFinished: "Análisis Finalizado",
+                statusPending: "Pendiente",
+                statusNormal: "Normal",
+                statusHighUse: "Alto Uso",
+                statusCorrect: "Correcto",
+                statusElevated: "Elevado",
+                statusHealthy: "Saludable",
+                statusStable: "Estable",
+                statusOptimal: "Óptimo",
+                statusHighTemp: "Temperatura Alta",
+                statusOk: "OK",
+                statusNoErrors: "Sin fallos",
+                statusOptimized: "Optimizado",
+                statusProtected: "Protegido",
+                statusUpdated: "Actualizados",
+                statusChecked: "Revisado",
+                robotGreeting: "👋 ¡Hola! Soy ZAGO-Bot. Tengo acceso completo a todos los diagnósticos de tu cuenta.",
+                chatWelcome: "¡Hola! Puedo analizar cualquiera de tus diagnósticos guardados. Escribe el ID del reporte (ej. <b>RPT-1001</b>) o pregúntame por el estado general de tu equipo.",
+                chatPlaceholder: "Ej: Analiza RPT-1001 o ¿cómo está mi CPU?",
+                sendBtn: "Enviar",
+                modalTitle: "Detalle del Diagnóstico",
+                modalHwResults: "Resultados de Hardware",
+                modalSwResults: "Resultados de Software"
+            },
+            en: {
+                tagline: "SYSTEM DIAGNOSTICS & REPORTING",
+                emailLabel: "Email Address",
+                passLabel: "Password",
+                loginBtn: "Log In",
+                noAccountText: "Don't have an account?",
+                createAccountBtn: "Create Account",
+                regTitle: "Create Account",
+                regSub: "NEW CLIENT REGISTRATION",
+                nameLabel: "First Name",
+                lastnameLabel: "Last Name",
+                regSubmitBtn: "Create Account and Continue",
+                hasAccountText: "Already have an account?",
+                navHome: "Home",
+                navOptions: "Options",
+                navHardware: "Hardware",
+                navSoftware: "Software",
+                navReports: "Reports",
+                navSupport: "Support",
+                myAccount: "My Account",
+                logoutBtn: "Log Out",
+                dashTitle: "Technical Diagnostic Panel",
+                dashSub: "Click the button to evaluate hardware and software in real time.",
+                scanBtn: "Start Scan",
+                scanningBtn: "Scanning...",
+                sectionHardware: "Hardware Components",
+                cardCpu: "Processor (CPU)",
+                descCpu: "Check the speed, current usage, and stability of the main chip under heavy load.",
+                usageCpu: "CPU Usage",
+                cardRam: "RAM Memory",
+                descRam: "Check for read or write errors in temporary memory modules.",
+                usageRam: "RAM Usage",
+                cardDisk: "Storage (SSD/HDD)",
+                descDisk: "Evaluate overall health, bad sectors, and data drive read speeds.",
+                usageDisk: "Used Space",
+                cardGpu: "Graphics Card (GPU)",
+                descGpu: "Verify the operation of the video chip and dedicated memory when rendering heavy graphics.",
+                usageGpu: "GPU Load",
+                cardMobo: "Motherboard & Ports",
+                descMobo: "Ensure the main board detects all components and USB/video ports work properly.",
+                cardTemp: "Temperatures & Fans",
+                descTemp: "Measure component heat and fan speeds to prevent thermal shutdowns.",
+                usageTemp: "CPU Temperature",
+                sectionSoftware: "Software Analysis",
+                cardOs: "Operating System",
+                descOs: "Check system file integrity, pending updates, and event logs for critical errors.",
+                cardProc: "Performance & Processes",
+                descProc: "Analyze excessive RAM, CPU, or disk usage caused by background apps.",
+                cardSec: "Security",
+                descSec: "Check for viruses, malware, and active status of antivirus and firewall.",
+                cardDrv: "Drivers",
+                descDrv: "Verify that video, network, and audio drivers are up to date without conflicts.",
+                cardApps: "Installed Applications",
+                descApps: "Identify outdated apps, bloatware, or conflicting software affecting startup.",
+                sectionReports: "Reports (Diagnostic History)",
+                clearHistoryBtn: "Clear History",
+                thId: "ID",
+                thDate: "Date & Time",
+                thHw: "Hardware Status",
+                thSw: "Software Status",
+                thActions: "Actions",
+                noReports: "No diagnostics registered. Click 'Start Scan'.",
+                viewDetailBtn: "View Details",
+                analysisFinished: "Analysis Complete",
+                statusPending: "Pending",
+                statusNormal: "Normal",
+                statusHighUse: "High Usage",
+                statusCorrect: "Correct",
+                statusElevated: "Elevated",
+                statusHealthy: "Healthy",
+                statusStable: "Stable",
+                statusOptimal: "Optimal",
+                statusHighTemp: "High Temp",
+                statusOk: "OK",
+                statusNoErrors: "No Errors",
+                statusOptimized: "Optimized",
+                statusProtected: "Protected",
+                statusUpdated: "Updated",
+                statusChecked: "Checked",
+                robotGreeting: "👋 Hello! I am ZAGO-Bot. I have full access to all your account diagnostics.",
+                chatWelcome: "Hello! I can analyze any of your saved reports. Type the report ID (e.g. <b>RPT-1001</b>) or ask about your overall system health.",
+                chatPlaceholder: "E.g.: Analyze RPT-1001 or how is my CPU?",
+                sendBtn: "Send",
+                modalTitle: "Diagnostic Details",
+                modalHwResults: "Hardware Results",
+                modalSwResults: "Software Results"
+            },
+            fr: {
+                tagline: "DIAGNOSTIC ET RAPPORTS SYSTÈME",
+                emailLabel: "Adresse Courriel",
+                passLabel: "Mot de passe",
+                loginBtn: "Se Connecter",
+                noAccountText: "Vous n'avez pas de compte?",
+                createAccountBtn: "Créer un compte",
+                regTitle: "Créer un compte",
+                regSub: "INSCRIPTION DE NOUVEAU CLIENT",
+                nameLabel: "Prénom",
+                lastnameLabel: "Nom",
+                regSubmitBtn: "Créer un compte et continuer",
+                hasAccountText: "Vous avez déjà un compte?",
+                navHome: "Accueil",
+                navOptions: "Options",
+                navHardware: "Matériel",
+                navSoftware: "Logiciel",
+                navReports: "Rapports",
+                navSupport: "Support",
+                myAccount: "Mon Compte",
+                logoutBtn: "Déconnexion",
+                dashTitle: "Panneau de Diagnostic Technique",
+                dashSub: "Cliquez sur le bouton pour évaluer le matériel et le logiciel en temps réel.",
+                scanBtn: "Lancer l'Analyse",
+                scanningBtn: "Analyse en cours...",
+                sectionHardware: "Composants Matériels",
+                cardCpu: "Processeur (CPU)",
+                descCpu: "Vérifiez la vitesse, l'utilisation actuelle et la stabilité de la puce principale.",
+                usageCpu: "Utilisation CPU",
+                cardRam: "Mémoire RAM",
+                descRam: "Vérifiez les erreurs de lecture ou d'écriture dans les modules de mémoire temporaire.",
+                usageRam: "Utilisation RAM",
+                cardDisk: "Stockage (SSD/HDD)",
+                descDisk: "Évaluez la santé globale, les secteurs défectueux et la vitesse de lecture.",
+                usageDisk: "Espace Utilisé",
+                cardGpu: "Carte Graphique (GPU)",
+                descGpu: "Vérifiez le fonctionnement de la puce vidéo et de sa mémoire dédiée.",
+                usageGpu: "Charge GPU",
+                cardMobo: "Carte Mère et Ports",
+                descMobo: "S'assurer que la carte mère détecte tout y compris les ports USB/vidéo.",
+                cardTemp: "Températures et Ventilateurs",
+                descTemp: "Mesurez la chaleur des composants pour éviter les extinctions thermiques.",
+                usageTemp: "Température CPU",
+                sectionSoftware: "Analyse Logicielle",
+                cardOs: "Système d'Exploitation",
+                descOs: "Vérifier l'intégrité des fichiers système et le journal des événements.",
+                cardProc: "Performances et Processus",
+                descProc: "Analyser l'utilisation excessive de la RAM et du CPU par les applications.",
+                cardSec: "Sécurité",
+                descSec: "Vérifier la présence de virus, de logiciels malveillants et l'état de l'antivirus.",
+                cardDrv: "Pilotes (Drivers)",
+                descDrv: "Vérifier que les pilotes vidéo, réseau et audio sont à jour sans conflit.",
+                cardApps: "Applications Installées",
+                descApps: "Identifier les applications obsolètes ou conflictuelles qui ralentissent le démarrage.",
+                sectionReports: "Rapports (Historique de Diagnostic)",
+                clearHistoryBtn: "Effacer l'Historique",
+                thId: "ID",
+                thDate: "Date et Heure",
+                thHw: "État Matériel",
+                thSw: "État Logiciel",
+                thActions: "Actions",
+                noReports: "Aucun diagnostic enregistré. Cliquez sur 'Lancer l'Analyse'.",
+                viewDetailBtn: "Voir Détails",
+                analysisFinished: "Analyse Terminée",
+                statusPending: "En attente",
+                statusNormal: "Normal",
+                statusHighUse: "Usage Élevé",
+                statusCorrect: "Correct",
+                statusElevated: "Élevé",
+                statusHealthy: "Sain",
+                statusStable: "Stable",
+                statusOptimal: "Optimal",
+                statusHighTemp: "Température Élevée",
+                statusOk: "OK",
+                statusNoErrors: "Sans Erreur",
+                statusOptimized: "Optimisé",
+                statusProtected: "Protégé",
+                statusUpdated: "À jour",
+                statusChecked: "Vérifié",
+                robotGreeting: "👋 Bonjour! Je suis ZAGO-Bot. J'ai un accès complet à tous vos diagnostics.",
+                chatWelcome: "Bonjour! Je peux analyser l'un de vos rapports enregistrés. Tapez l'ID du rapport (ex: <b>RPT-1001</b>) ou posez-moi una question.",
+                chatPlaceholder: "Ex: Analyser RPT-1001 ou comment va mon CPU?",
+                sendBtn: "Envoyer",
+                modalTitle: "Détails du Diagnostic",
+                modalHwResults: "Résultats Matériels",
+                modalSwResults: "Résultats Logiciels"
+            }
+        };
+
+        let currentLang = localStorage.getItem('zago_lang') || 'es';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('zago_lang', lang);
+
+            // Actualizar selectores
+            document.querySelectorAll('.lang-select').forEach(sel => sel.value = lang);
+
+            // Actualizar elementos con data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+
+            // Actualizar html con data-i18n
+            document.querySelectorAll('[data-i18n-html]').forEach(el => {
+                const key = el.getAttribute('data-i18n-html');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+
+            // Actualizar placeholders
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                const key = el.getAttribute('data-i18n-ph');
+                if (translations[lang] && translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+
+            renderSavedReports();
+        }
+
+        // Navegación
         function showPage(pageId) {
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('register-page').classList.add('hidden');
@@ -925,7 +1272,7 @@
             document.getElementById(pageId).classList.remove('hidden');
         }
 
-        // Registro de Usuario
+        // Registro
         document.getElementById('form-register').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -939,7 +1286,6 @@
             localStorage.setItem('clienteData', JSON.stringify(userObj));
             localStorage.setItem('sesionIniciada', 'true');
 
-            alert('¡Cuenta creada exitosamente!');
             cargarDashboard();
         });
 
@@ -955,11 +1301,10 @@
                 localStorage.setItem('sesionIniciada', 'true');
                 cargarDashboard();
             } else {
-                alert('Email o contraseña incorrectos.');
+                alert(currentLang === 'es' ? 'Email o contraseña incorrectos.' : (currentLang === 'fr' ? 'Courriel ou mot de passe incorrect.' : 'Incorrect email or password.'));
             }
         });
 
-        // Cargar Dashboard
         function cargarDashboard() {
             const savedUser = JSON.parse(localStorage.getItem('clienteData'));
             if (savedUser) {
@@ -969,21 +1314,22 @@
             showPage('diagnostics-page');
         }
 
-        // Cerrar Sesión
         function logout() {
             localStorage.setItem('sesionIniciada', 'false');
             showPage('login-page');
         }
 
-        // Lógica de Escaneo de Diagnóstico
+        // Escaneo
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
         function startScan() {
             const btn = document.getElementById('scanBtn');
+            const t = translations[currentLang];
+
             btn.disabled = true;
-            btn.innerText = "Escaneando...";
+            btn.innerText = t.scanningBtn;
 
             setTimeout(() => {
                 const currentData = {
@@ -992,46 +1338,45 @@
                     disk: getRandomInt(20, 75) + '%',
                     gpu: getRandomInt(5, 60) + '%',
                     temp: getRandomInt(35, 78) + '°C',
-                    mobo: 'Placa base OK / Puertos USB funcionales',
-                    os: 'Archivos de sistema íntegros',
-                    proc: 'Procesos estables sin sobrecarga',
-                    sec: 'Antivirus activo / Sin amenazas',
-                    drv: 'Todos los controladores al día',
-                    apps: 'Sin programas conflictivos'
+                    mobo: 'OK',
+                    os: 'OK',
+                    proc: 'OK',
+                    sec: 'OK',
+                    drv: 'OK',
+                    apps: 'OK'
                 };
 
-                // Actualizar interfaz
                 document.getElementById('cpu-bar').style.width = currentData.cpu;
-                document.getElementById('cpu-text').innerText = `Uso de CPU: ${currentData.cpu}`;
-                updateBadge('cpu-status', parseInt(currentData.cpu) > 80 ? 'Alto Uso' : 'Normal', parseInt(currentData.cpu) > 80 ? 'status-warn' : 'status-good');
+                document.getElementById('cpu-text').innerText = `${t.usageCpu}: ${currentData.cpu}`;
+                updateBadge('cpu-status', parseInt(currentData.cpu) > 80 ? t.statusHighUse : t.statusNormal, parseInt(currentData.cpu) > 80 ? 'status-warn' : 'status-good');
 
                 document.getElementById('ram-bar').style.width = currentData.ram;
-                document.getElementById('ram-text').innerText = `Uso de RAM: ${currentData.ram}`;
-                updateBadge('ram-status', parseInt(currentData.ram) > 85 ? 'Elevado' : 'Correcto', parseInt(currentData.ram) > 85 ? 'status-warn' : 'status-good');
+                document.getElementById('ram-text').innerText = `${t.usageRam}: ${currentData.ram}`;
+                updateBadge('ram-status', parseInt(currentData.ram) > 85 ? t.statusElevated : t.statusCorrect, parseInt(currentData.ram) > 85 ? 'status-warn' : 'status-good');
 
                 document.getElementById('disk-bar').style.width = currentData.disk;
-                document.getElementById('disk-text').innerText = `Espacio usado: ${currentData.disk}`;
-                updateBadge('disk-status', 'Saludable', 'status-good');
+                document.getElementById('disk-text').innerText = `${t.usageDisk}: ${currentData.disk}`;
+                updateBadge('disk-status', t.statusHealthy, 'status-good');
 
                 document.getElementById('gpu-bar').style.width = currentData.gpu;
-                document.getElementById('gpu-text').innerText = `Carga de GPU: ${currentData.gpu}`;
-                updateBadge('gpu-status', 'Estable', 'status-good');
+                document.getElementById('gpu-text').innerText = `${t.usageGpu}: ${currentData.gpu}`;
+                updateBadge('gpu-status', t.statusStable, 'status-good');
 
                 document.getElementById('temp-bar').style.width = parseInt(currentData.temp) + '%';
-                document.getElementById('temp-text').innerText = `Temperatura CPU: ${currentData.temp}`;
-                updateBadge('temp-status', parseInt(currentData.temp) > 75 ? 'Temperatura Alta' : 'Óptimo', parseInt(currentData.temp) > 75 ? 'status-warn' : 'status-good');
+                document.getElementById('temp-text').innerText = `${t.usageTemp}: ${currentData.temp}`;
+                updateBadge('temp-status', parseInt(currentData.temp) > 75 ? t.statusHighTemp : t.statusOptimal, parseInt(currentData.temp) > 75 ? 'status-warn' : 'status-good');
 
-                updateBadge('mobo-status', 'OK', 'status-good');
-                updateBadge('os-status', 'Sin fallos', 'status-good');
-                updateBadge('proc-status', 'Optimizado', 'status-good');
-                updateBadge('sec-status', 'Protegido', 'status-good');
-                updateBadge('drv-status', 'Actualizados', 'status-good');
-                updateBadge('apps-status', 'Revisado', 'status-good');
+                updateBadge('mobo-status', t.statusOk, 'status-good');
+                updateBadge('os-status', t.statusNoErrors, 'status-good');
+                updateBadge('proc-status', t.statusOptimized, 'status-good');
+                updateBadge('sec-status', t.statusProtected, 'status-good');
+                updateBadge('drv-status', t.statusUpdated, 'status-good');
+                updateBadge('apps-status', t.statusChecked, 'status-good');
 
                 saveReport(currentData);
 
                 btn.disabled = false;
-                btn.innerText = "Start Scan";
+                btn.innerText = t.scanBtn;
             }, 1200);
         }
 
@@ -1041,15 +1386,13 @@
             badge.className = `status-badge ${className}`;
         }
 
-        // Persistencia de reportes en localStorage
         function getStoredReports() {
             return JSON.parse(localStorage.getItem('zago_reports_history')) || {};
         }
 
         function saveReport(data) {
             const reportsHistory = getStoredReports();
-            const reportKeys = Object.keys(reportsHistory);
-            const reportCount = reportKeys.length + 1;
+            const reportCount = Object.keys(reportsHistory).length + 1;
             const reportId = `RPT-${1000 + reportCount}`;
             const now = new Date();
             const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
@@ -1064,11 +1407,12 @@
             const tableBody = document.getElementById('reportsBody');
             const reportsHistory = getStoredReports();
             const reportKeys = Object.keys(reportsHistory).reverse();
+            const t = translations[currentLang];
 
             if (reportKeys.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-secondary);">No hay diagnósticos registrados. Haz clic en "Start Scan".</td>
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary);">${t.noReports}</td>
                     </tr>`;
                 return;
             }
@@ -1080,16 +1424,17 @@
                 row.innerHTML = `
                     <td>#${reportId}</td>
                     <td>${report.date}</td>
-                    <td><span class="status-badge status-good">Análisis Finalizado</span></td>
-                    <td><span class="status-badge status-good">Análisis Finalizado</span></td>
-                    <td><button class="btn-view" onclick="openModal('${reportId}')">Ver Detalle</button></td>
+                    <td><span class="status-badge status-good">${t.analysisFinished}</span></td>
+                    <td><span class="status-badge status-good">${t.analysisFinished}</span></td>
+                    <td><button class="btn-view" onclick="openModal('${reportId}')">${t.viewDetailBtn}</button></td>
                 `;
                 tableBody.appendChild(row);
             });
         }
 
         function clearReportsHistory() {
-            if (confirm('¿Estás seguro de que deseas borrar todo el historial de reportes?')) {
+            const confirmMsg = currentLang === 'es' ? '¿Estás seguro de borrar los reportes?' : (currentLang === 'fr' ? 'Êtes-vous sûr de vouloir tout effacer?' : 'Are you sure you want to clear history?');
+            if (confirm(confirmMsg)) {
                 localStorage.removeItem('zago_reports_history');
                 renderSavedReports();
             }
@@ -1100,8 +1445,8 @@
             const report = reportsHistory[reportId];
             if (!report) return;
 
-            document.getElementById('modalTitle').innerText = `Reporte #${reportId}`;
-            document.getElementById('modalDate').innerText = `Fecha de evaluación: ${report.date}`;
+            document.getElementById('modalTitle').innerText = `${translations[currentLang].modalTitle} #${reportId}`;
+            document.getElementById('modalDate').innerText = `${report.date}`;
 
             document.getElementById('m-cpu').innerText = report.details.cpu;
             document.getElementById('m-ram').innerText = report.details.ram;
@@ -1123,7 +1468,7 @@
             document.getElementById('reportModal').style.display = 'none';
         }
 
-        // --- LÓGICA DEL CHAT CON CONOCIMIENTO COMPLETO DE DIAGNÓSTICOS ---
+        // --- CHAT IA MULTILENGUAJE CON CONTEXTO ---
         function handleSendMessage(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
@@ -1143,91 +1488,67 @@
             const chatMessages = document.getElementById('chatMessages');
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${sender}`;
-            msgDiv.innerHTML = text; // Permite formato HTML como <b>, <br>
+            msgDiv.innerHTML = text;
             chatMessages.appendChild(msgDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Procesador inteligente con acceso a los datos del localStorage
         function processQueryWithContext(query) {
             const history = getStoredReports();
             const keys = Object.keys(history);
             const queryUpper = query.toUpperCase();
+            const lang = currentLang;
 
-            // 1. Buscar si el usuario escribió un ID específico (ej. RPT-1001)
             const matchedKey = keys.find(k => queryUpper.includes(k));
 
             if (matchedKey) {
                 const rpt = history[matchedKey];
                 const d = rpt.details;
-                const cpuVal = parseInt(d.cpu);
-                const ramVal = parseInt(d.ram);
-                const tempVal = parseInt(d.temp);
-
-                let statusMsg = "✅ El sistema funcionaba de manera óptima.";
-                if (cpuVal > 80 || ramVal > 85 || tempVal > 75) {
-                    statusMsg = "⚠️ Se identificaron alertas de alto consumo o temperatura en este diagnóstico.";
+                
+                if (lang === 'fr') {
+                    return `<b>Analyse de ${matchedKey} (${rpt.date}):</b><br>` +
+                           `• <b>CPU:</b> ${d.cpu} | <b>RAM:</b> ${d.ram}<br>` +
+                           `• <b>Disque:</b> ${d.disk} | <b>GPU:</b> ${d.gpu}<br>` +
+                           `• <b>Température:</b> ${d.temp}<br><br>` +
+                           `<b>Diagnostic IA:</b> Les métriques ont été enregistrées avec succès.`;
+                } else if (lang === 'en') {
+                    return `<b>Analysis for ${matchedKey} (${rpt.date}):</b><br>` +
+                           `• <b>CPU:</b> ${d.cpu} | <b>RAM:</b> ${d.ram}<br>` +
+                           `• <b>Disk:</b> ${d.disk} | <b>GPU:</b> ${d.gpu}<br>` +
+                           `• <b>Temperature:</b> ${d.temp}<br><br>` +
+                           `<b>AI Diagnosis:</b> Metrics recorded successfully.`;
+                } else {
+                    return `<b>Análisis de ${matchedKey} (${rpt.date}):</b><br>` +
+                           `• <b>CPU:</b> ${d.cpu} | <b>RAM:</b> ${d.ram}<br>` +
+                           `• <b>Disco:</b> ${d.disk} | <b>GPU:</b> ${d.gpu}<br>` +
+                           `• <b>Temperatura CPU:</b> ${d.temp}<br><br>` +
+                           `<b>Diagnóstico IA:</b> Métricas registradas correctamente.`;
                 }
-
-                return `<b>Análisis de ${matchedKey} (${rpt.date}):</b><br>` +
-                       `• <b>CPU:</b> ${d.cpu} | <b>RAM:</b> ${d.ram}<br>` +
-                       `• <b>Disco:</b> ${d.disk} | <b>GPU:</b> ${d.gpu}<br>` +
-                       `• <b>Temperatura CPU:</b> ${d.temp}<br>` +
-                       `• <b>Seguridad:</b> ${d.sec}<br><br>` +
-                       `<b>Diagnóstico IA:</b> ${statusMsg}`;
             }
 
-            // 2. Solicitud de lista de reportes
-            if (queryUpper.includes('LISTA') || queryUpper.includes('TODOS') || queryUpper.includes('REPORTES')) {
+            if (queryUpper.includes('LISTA') || queryUpper.includes('LIST') || queryUpper.includes('LISTE') || queryUpper.includes('REPORTES') || queryUpper.includes('REPORTS') || queryUpper.includes('RAPPORTS')) {
                 if (keys.length === 0) {
-                    return "Aún no tienes ningún diagnóstico registrado en esta cuenta. Ve al inicio y presiona <b>Start Scan</b>.";
+                    return lang === 'fr' ? "Aucun diagnostic trouvé." : (lang === 'en' ? "No diagnostics found." : "No se encontraron diagnósticos.");
                 }
-                let listText = "<b>Tus diagnósticos registrados son:</b><br>";
+                let listText = lang === 'fr' ? "<b>Vos diagnostics enregistrés:</b><br>" : (lang === 'en' ? "<b>Your saved diagnostics:</b><br>" : "<b>Tus diagnósticos registrados:</b><br>");
                 keys.forEach(k => {
-                    listText += `• <b>${k}</b> - Fecha: ${history[k].date}<br>`;
+                    listText += `• <b>${k}</b> - ${history[k].date}<br>`;
                 });
-                listText += "<br>Puedes escribir <i>'Analiza " + keys[0] + "'</i> para ver el detalle de cualquiera de ellos.";
                 return listText;
             }
 
-            // 3. Resumen de rendimiento general
-            if (queryUpper.includes('RESUMEN') || queryUpper.includes('ESTADO GENERAL') || queryUpper.includes('EQUIPO')) {
-                if (keys.length === 0) {
-                    return "No he encontrado reportes previos en tu cuenta para hacer una evaluación.";
-                }
-                const lastKey = keys[keys.length - 1];
-                const lastRpt = history[lastKey].details;
-                return `<b>Evaluación General de tu Sistema (Basado en ${keys.length} reporte(s)):</b><br>` +
-                       `• Último análisis realizado: <b>${lastKey}</b><br>` +
-                       `• CPU reciente: <b>${lastRpt.cpu}</b><br>` +
-                       `• Memoria RAM: <b>${lastRpt.ram}</b><br>` +
-                       `• Estado de Seguridad: <b>${lastRpt.sec}</b><br><br>` +
-                       `En general, tu equipo se encuentra en buenas condiciones operativas.`;
+            if (lang === 'fr') {
+                return "Je peux analyser vos rapports enregistrés. Tapez l'ID du rapport (ex: <b>RPT-1001</b>) ou 'liste' pour voir vos rapports.";
+            } else if (lang === 'en') {
+                return "I can analyze your saved reports. Enter the report ID (e.g. <b>RPT-1001</b>) or 'list' to view your reports.";
+            } else {
+                return "Puedo analizar cualquier informe guardado. Escribe el ID del reporte (ej. <b>RPT-1001</b>) o 'lista' para ver tus reportes.";
             }
-
-            // 4. Preguntas por componentes
-            if (queryUpper.includes('CPU') || queryUpper.includes('PROCESADOR')) {
-                if (keys.length > 0) {
-                    const lastKey = keys[keys.length - 1];
-                    return `En tu último reporte (<b>${lastKey}</b>), el uso del CPU estuvo en <b>${history[lastKey].details.cpu}</b> y la temperatura en <b>${history[lastKey].details.temp}</b>.`;
-                }
-                return "El uso de CPU óptimo debe mantenerse por debajo del 80%. Haz un escaneo para medir el valor actual.";
-            }
-
-            if (queryUpper.includes('RAM') || queryUpper.includes('MEMORIA')) {
-                if (keys.length > 0) {
-                    const lastKey = keys[keys.length - 1];
-                    return `En el reporte <b>${lastKey}</b>, la memoria RAM registrada estuvo en <b>${history[lastKey].details.ram}</b> de capacidad usada.`;
-                }
-                return "Si notas lentitud, la RAM suele ser la causa si supera el 85% de uso continuo.";
-            }
-
-            // Respuestas generales
-            return "Puedo darte soporte sobre cualquier informe guardado. Indícame el código del reporte (como <b>RPT-1001</b>) o escribe <i>'lista de reportes'</i> para ver cuáles tienes disponibles.";
         }
 
-        // Estado inicial
+        // Inicialización
         window.onload = function() {
+            changeLanguage(currentLang);
             const sesionActiva = localStorage.getItem('sesionIniciada');
             if (sesionActiva === 'true') {
                 cargarDashboard();
