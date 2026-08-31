@@ -14,7 +14,6 @@
             --accent-hover: #1d4ed8;
             --status-good: #22c55e;
             --status-warn: #eab308;
-            --status-danger: #ef4444;
             --border-color: #334155;
         }
 
@@ -41,7 +40,7 @@
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 90;
         }
 
         .logo {
@@ -102,9 +101,6 @@
         }
 
         .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
             background-color: var(--accent-color);
             padding: 0.5rem 1rem;
             border-radius: 20px;
@@ -132,7 +128,7 @@
             border-radius: 6px;
             cursor: pointer;
             margin-top: 1rem;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: background-color 0.2s;
         }
 
         .btn-scan:hover {
@@ -237,10 +233,85 @@
             color: var(--text-secondary);
             font-weight: 600;
         }
+
+        .btn-view {
+            background-color: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-view:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Modal / Ventana Emergente */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            border: 1px solid var(--border-color);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .detail-group {
+            margin-bottom: 1rem;
+        }
+
+        .detail-group h4 {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 <body>
 
+    <!-- Encabezado -->
     <header>
         <div class="logo">ZAGO inc</div>
         <nav>
@@ -260,6 +331,7 @@
         </div>
     </header>
 
+    <!-- Contenido Principal -->
     <main>
         <div class="dashboard-header">
             <h1>Panel de Diagnóstico Técnico</h1>
@@ -267,9 +339,9 @@
             <button id="scanBtn" class="btn-scan" onclick="startScan()">Start Scan</button>
         </div>
 
+        <!-- Sección Hardware -->
         <h2 id="hardware" class="section-title">Componentes de Hardware</h2>
         <div class="grid-container">
-
             <div class="card">
                 <div>
                     <div class="card-header">
@@ -349,12 +421,11 @@
                     <div class="metric-bar"><div id="temp-bar" class="metric-fill"></div></div>
                 </div>
             </div>
-
         </div>
 
+        <!-- Sección Software -->
         <h2 id="software" class="section-title">Análisis de Software</h2>
         <div class="grid-container">
-
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Sistema Operativo</span>
@@ -394,18 +465,18 @@
                 </div>
                 <p class="card-description">Identificar aplicaciones obsoletas, software basura (bloatware) o conflictos entre programas que afecten el arranque.</p>
             </div>
-
         </div>
 
+        <!-- Sección Historial de Reportes -->
         <h2 id="reports" class="section-title">Reports (Historial de Diagnósticos)</h2>
         <table class="reports-table">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Fecha y Hora</th>
-                    <th>Estado de Hardware</th>
-                    <th>Estado de Software</th>
-                    <th>Resultado General</th>
+                    <th>Estado Hardware</th>
+                    <th>Estado Software</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="reportsBody">
@@ -416,8 +487,40 @@
         </table>
     </main>
 
+    <!-- Modal para ver el detalle de cada reporte -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Detalle del Diagnóstico</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <p id="modalDate" style="color: var(--text-secondary); margin-bottom: 1rem;"></p>
+            
+            <div class="detail-group">
+                <h4>Resultados de Hardware</h4>
+                <div class="detail-item"><span>Uso de CPU:</span><strong id="m-cpu">--</strong></div>
+                <div class="detail-item"><span>Uso de RAM:</span><strong id="m-ram">--</strong></div>
+                <div class="detail-item"><span>Almacenamiento Usado:</span><strong id="m-disk">--</strong></div>
+                <div class="detail-item"><span>Carga de GPU:</span><strong id="m-gpu">--</strong></div>
+                <div class="detail-item"><span>Temperatura CPU:</span><strong id="m-temp">--</strong></div>
+                <div class="detail-item"><span>Placa Base y Puertos:</span><strong id="m-mobo">--</strong></div>
+            </div>
+
+            <div class="detail-group">
+                <h4>Resultados de Software</h4>
+                <div class="detail-item"><span>Sistema Operativo:</span><strong id="m-os">--</strong></div>
+                <div class="detail-item"><span>Rendimiento y Procesos:</span><strong id="m-proc">--</strong></div>
+                <div class="detail-item"><span>Seguridad:</span><strong id="m-sec">--</strong></div>
+                <div class="detail-item"><span>Controladores:</span><strong id="m-drv">--</strong></div>
+                <div class="detail-item"><span>Programas Instalados:</span><strong id="m-apps">--</strong></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let reportCount = 0;
+        // Objeto para almacenar los datos históricos de cada escaneo
+        const reportsHistory = {};
 
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -429,45 +532,51 @@
             btn.innerText = "Escaneando...";
 
             setTimeout(() => {
-                // Simulación de valores de Hardware
-                const cpuVal = getRandomInt(15, 85);
-                const ramVal = getRandomInt(30, 90);
-                const diskVal = getRandomInt(20, 75);
-                const gpuVal = getRandomInt(5, 60);
-                const tempVal = getRandomInt(35, 78);
+                // Generar los resultados
+                const currentData = {
+                    cpu: getRandomInt(15, 85) + '%',
+                    ram: getRandomInt(30, 90) + '%',
+                    disk: getRandomInt(20, 75) + '%',
+                    gpu: getRandomInt(5, 60) + '%',
+                    temp: getRandomInt(35, 78) + '°C',
+                    mobo: 'Placa base OK / Puertos USB funcionales',
+                    os: 'Archivos de sistema íntegros',
+                    proc: 'Procesos estables sin sobrecarga',
+                    sec: 'Antivirus activo / Sin amenazas',
+                    drv: 'Todos los controladores al día',
+                    apps: 'Sin programas conflictivos'
+                };
 
-                // Actualizar barras y textos de Hardware
-                document.getElementById('cpu-bar').style.width = cpuVal + '%';
-                document.getElementById('cpu-text').innerText = `Uso de CPU: ${cpuVal}%`;
-                updateBadge('cpu-status', cpuVal > 80 ? 'Alto Uso' : 'Normal', cpuVal > 80 ? 'status-warn' : 'status-good');
+                // Actualizar interfaz actual
+                document.getElementById('cpu-bar').style.width = currentData.cpu;
+                document.getElementById('cpu-text').innerText = `Uso de CPU: ${currentData.cpu}`;
+                updateBadge('cpu-status', parseInt(currentData.cpu) > 80 ? 'Alto Uso' : 'Normal', parseInt(currentData.cpu) > 80 ? 'status-warn' : 'status-good');
 
-                document.getElementById('ram-bar').style.width = ramVal + '%';
-                document.getElementById('ram-text').innerText = `Uso de RAM: ${ramVal}%`;
-                updateBadge('ram-status', ramVal > 85 ? 'Elevado' : 'Correcto', ramVal > 85 ? 'status-warn' : 'status-good');
+                document.getElementById('ram-bar').style.width = currentData.ram;
+                document.getElementById('ram-text').innerText = `Uso de RAM: ${currentData.ram}`;
+                updateBadge('ram-status', parseInt(currentData.ram) > 85 ? 'Elevado' : 'Correcto', parseInt(currentData.ram) > 85 ? 'status-warn' : 'status-good');
 
-                document.getElementById('disk-bar').style.width = diskVal + '%';
-                document.getElementById('disk-text').innerText = `Espacio usado: ${diskVal}%`;
+                document.getElementById('disk-bar').style.width = currentData.disk;
+                document.getElementById('disk-text').innerText = `Espacio usado: ${currentData.disk}`;
                 updateBadge('disk-status', 'Saludable', 'status-good');
 
-                document.getElementById('gpu-bar').style.width = gpuVal + '%';
-                document.getElementById('gpu-text').innerText = `Carga de GPU: ${gpuVal}%`;
+                document.getElementById('gpu-bar').style.width = currentData.gpu;
+                document.getElementById('gpu-text').innerText = `Carga de GPU: ${currentData.gpu}`;
                 updateBadge('gpu-status', 'Estable', 'status-good');
 
-                document.getElementById('temp-bar').style.width = tempVal + '%';
-                document.getElementById('temp-text').innerText = `Temperatura CPU: ${tempVal}°C`;
-                updateBadge('temp-status', tempVal > 75 ? 'Temperatura Alta' : 'Óptimo', tempVal > 75 ? 'status-warn' : 'status-good');
+                document.getElementById('temp-bar').style.width = parseInt(currentData.temp) + '%';
+                document.getElementById('temp-text').innerText = `Temperatura CPU: ${currentData.temp}`;
+                updateBadge('temp-status', parseInt(currentData.temp) > 75 ? 'Temperatura Alta' : 'Óptimo', parseInt(currentData.temp) > 75 ? 'status-warn' : 'status-good');
 
                 updateBadge('mobo-status', 'OK', 'status-good');
-
-                // Actualizar badges de Software
                 updateBadge('os-status', 'Sin fallos', 'status-good');
                 updateBadge('proc-status', 'Optimizado', 'status-good');
                 updateBadge('sec-status', 'Protegido', 'status-good');
                 updateBadge('drv-status', 'Actualizados', 'status-good');
                 updateBadge('apps-status', 'Revisado', 'status-good');
 
-                // Agregar nuevo registro a la tabla de Reports
-                addReportRecord(tempVal > 75 || ramVal > 85 ? 'Advertencia' : 'Excelente');
+                // Guardar y agregar a la tabla
+                saveReport(currentData);
 
                 btn.disabled = false;
                 btn.innerText = "Start Scan";
@@ -480,27 +589,57 @@
             badge.className = `status-badge ${className}`;
         }
 
-        function addReportRecord(overallStatus) {
+        function saveReport(data) {
             const tableBody = document.getElementById('reportsBody');
-            
-            if (reportCount === 0) {
-                tableBody.innerHTML = '';
-            }
+            if (reportCount === 0) tableBody.innerHTML = '';
 
             reportCount++;
+            const reportId = `RPT-${1000 + reportCount}`;
             const now = new Date();
             const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
 
+            // Guardar datos en el objeto global usando el ID como clave
+            reportsHistory[reportId] = { date: dateStr, details: data };
+
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>#RPT-${1000 + reportCount}</td>
+                <td>#${reportId}</td>
                 <td>${dateStr}</td>
-                <td><span class="status-badge status-good">Completado</span></td>
-                <td><span class="status-badge status-good">Completado</span></td>
-                <td><span class="status-badge ${overallStatus === 'Excelente' ? 'status-good' : 'status-warn'}">${overallStatus}</span></td>
+                <td><span class="status-badge status-good">Análisis Finalizado</span></td>
+                <td><span class="status-badge status-good">Análisis Finalizado</span></td>
+                <td><button class="btn-view" onclick="openModal('${reportId}')">Ver Detalle</button></td>
             `;
 
             tableBody.insertBefore(row, tableBody.firstChild);
+        }
+
+        function openModal(reportId) {
+            const report = reportsHistory[reportId];
+            if (!report) return;
+
+            document.getElementById('modalTitle').innerText = `Reporte #${reportId}`;
+            document.getElementById('modalDate').innerText = `Fecha de evaluación: ${report.date}`;
+
+            // Llenar datos de hardware
+            document.getElementById('m-cpu').innerText = report.details.cpu;
+            document.getElementById('m-ram').innerText = report.details.ram;
+            document.getElementById('m-disk').innerText = report.details.disk;
+            document.getElementById('m-gpu').innerText = report.details.gpu;
+            document.getElementById('m-temp').innerText = report.details.temp;
+            document.getElementById('m-mobo').innerText = report.details.mobo;
+
+            // Llenar datos de software
+            document.getElementById('m-os').innerText = report.details.os;
+            document.getElementById('m-proc').innerText = report.details.proc;
+            document.getElementById('m-sec').innerText = report.details.sec;
+            document.getElementById('m-drv').innerText = report.details.drv;
+            document.getElementById('m-apps').innerText = report.details.apps;
+
+            document.getElementById('reportModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('reportModal').style.display = 'none';
         }
     </script>
 </body>
