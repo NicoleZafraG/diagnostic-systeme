@@ -349,6 +349,30 @@
         }
 
         /* Tabla de Reportes */
+        .reports-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-clear {
+            background-color: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-clear:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
         .reports-table {
             width: 100%;
             border-collapse: collapse;
@@ -356,7 +380,6 @@
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid var(--border-color);
-            margin-top: 1rem;
         }
 
         .reports-table th, .reports-table td {
@@ -674,7 +697,10 @@
                 </div>
             </div>
 
-            <h2 id="reports" class="section-title">Reports (Historial de Diagnósticos)</h2>
+            <div id="reports" class="reports-table-header">
+                <h2 class="section-title" style="margin: 0; border: none;">Reports (Historial de Diagnósticos)</h2>
+                <button class="btn-clear" onclick="clearReportsHistory()">Borrar Historial</button>
+            </div>
             <table class="reports-table">
                 <thead>
                     <tr>
@@ -724,9 +750,6 @@
     </div>
 
     <script>
-        let reportCount = 0;
-        const reportsHistory = {};
-
         // Cambiar de vista (Login, Registro, Dashboard)
         function showPage(pageId) {
             document.getElementById('login-page').classList.add('hidden');
@@ -776,6 +799,7 @@
             if (savedUser) {
                 document.getElementById('user-display').innerText = `${savedUser.nombre} ${savedUser.apellido}`;
             }
+            renderSavedReports();
             showPage('diagnostics-page');
         }
 
@@ -851,30 +875,62 @@
             badge.className = `status-badge ${className}`;
         }
 
-        function saveReport(data) {
-            const tableBody = document.getElementById('reportsBody');
-            if (reportCount === 0) tableBody.innerHTML = '';
+        // --- PERSISTENCIA DE REPORTES EN LOCALSTORAGE ---
+        function getStoredReports() {
+            return JSON.parse(localStorage.getItem('zago_reports_history')) || {};
+        }
 
-            reportCount++;
+        function saveReport(data) {
+            const reportsHistory = getStoredReports();
+            const reportKeys = Object.keys(reportsHistory);
+            const reportCount = reportKeys.length + 1;
             const reportId = `RPT-${1000 + reportCount}`;
             const now = new Date();
             const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
 
             reportsHistory[reportId] = { date: dateStr, details: data };
+            localStorage.setItem('zago_reports_history', JSON.stringify(reportsHistory));
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>#${reportId}</td>
-                <td>${dateStr}</td>
-                <td><span class="status-badge status-good">Análisis Finalizado</span></td>
-                <td><span class="status-badge status-good">Análisis Finalizado</span></td>
-                <td><button class="btn-view" onclick="openModal('${reportId}')">Ver Detalle</button></td>
-            `;
+            renderSavedReports();
+        }
 
-            tableBody.insertBefore(row, tableBody.firstChild);
+        function renderSavedReports() {
+            const tableBody = document.getElementById('reportsBody');
+            const reportsHistory = getStoredReports();
+            const reportKeys = Object.keys(reportsHistory).reverse(); // Ordenar del más reciente al más antiguo
+
+            if (reportKeys.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary);">No hay diagnósticos registrados. Haz clic en "Start Scan".</td>
+                    </tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = '';
+            reportKeys.forEach(reportId => {
+                const report = reportsHistory[reportId];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#${reportId}</td>
+                    <td>${report.date}</td>
+                    <td><span class="status-badge status-good">Análisis Finalizado</span></td>
+                    <td><span class="status-badge status-good">Análisis Finalizado</span></td>
+                    <td><button class="btn-view" onclick="openModal('${reportId}')">Ver Detalle</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function clearReportsHistory() {
+            if (confirm('¿Estás seguro de que deseas borrar todo el historial de reportes?')) {
+                localStorage.removeItem('zago_reports_history');
+                renderSavedReports();
+            }
         }
 
         function openModal(reportId) {
+            const reportsHistory = getStoredReports();
             const report = reportsHistory[reportId];
             if (!report) return;
 
