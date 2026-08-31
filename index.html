@@ -1217,16 +1217,16 @@
                 modalSwResults: "Résultats Logiciels"
             }
         };
-
+    
         let currentLang = localStorage.getItem('zago_lang') || 'es';
-
+    
         function changeLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('zago_lang', lang);
-
+    
             // Actualizar selectores
             document.querySelectorAll('.lang-select').forEach(sel => sel.value = lang);
-
+    
             // Actualizar elementos con data-i18n
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
@@ -1234,69 +1234,75 @@
                     el.innerText = translations[lang][key];
                 }
             });
-
-            // Actualizar html con data-i18n
+    
+            // Actualizar elementos con HTML interno (soporta <b>, <br>, etc.)
             document.querySelectorAll('[data-i18n-html]').forEach(el => {
                 const key = el.getAttribute('data-i18n-html');
                 if (translations[lang] && translations[lang][key]) {
                     el.innerHTML = translations[lang][key];
                 }
             });
-
-            // Actualizar placeholders
+    
+            // Actualizar placeholders eliminando cualquier etiqueta HTML por seguridad
             document.querySelectorAll('[data-i18n-ph]').forEach(el => {
                 const key = el.getAttribute('data-i18n-ph');
                 if (translations[lang] && translations[lang][key]) {
-                    el.placeholder = translations[lang][key];
+                    el.placeholder = translations[lang][key].replace(/<[^>]*>?/gm, '');
                 }
             });
-
+    
+            // Actualizar mensaje inicial del chat con HTML
+            const firstBotMsg = document.querySelector('#chatMessages .message.bot');
+            if (firstBotMsg && translations[lang]['chatWelcome']) {
+                firstBotMsg.innerHTML = translations[lang]['chatWelcome'];
+            }
+    
             renderSavedReports();
         }
-
+    
         // Navegación
         function showPage(pageId) {
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('register-page').classList.add('hidden');
             document.getElementById('diagnostics-page').classList.add('hidden');
             document.getElementById('support-page').classList.add('hidden');
-
+    
             const header = document.getElementById('main-header');
-
+    
             if (pageId === 'login-page' || pageId === 'register-page') {
                 header.classList.add('hidden');
             } else {
                 header.classList.remove('hidden');
             }
-
+    
             document.getElementById(pageId).classList.remove('hidden');
         }
-
+    
         // Registro
         document.getElementById('form-register').addEventListener('submit', function(e) {
             e.preventDefault();
-
+    
             const userObj = {
                 nombre: document.getElementById('reg-nombre').value,
                 apellido: document.getElementById('reg-apellido').value,
                 email: document.getElementById('reg-email').value,
                 password: document.getElementById('reg-password').value
             };
-
+    
             localStorage.setItem('clienteData', JSON.stringify(userObj));
             localStorage.setItem('sesionIniciada', 'true');
-
+    
             cargarDashboard();
         });
-
+    
         // Inicio de Sesión
         document.getElementById('form-login').addEventListener('submit', function(e) {
             e.preventDefault();
-
+    
             const emailInput = document.getElementById('login-email').value;
             const passInput = document.getElementById('login-password').value;
             const savedUser = JSON.parse(localStorage.getItem('clienteData'));
-
+    
             if (savedUser && savedUser.email === emailInput && savedUser.password === passInput) {
                 localStorage.setItem('sesionIniciada', 'true');
                 cargarDashboard();
@@ -1304,7 +1310,7 @@
                 alert(currentLang === 'es' ? 'Email o contraseña incorrectos.' : (currentLang === 'fr' ? 'Courriel ou mot de passe incorrect.' : 'Incorrect email or password.'));
             }
         });
-
+    
         function cargarDashboard() {
             const savedUser = JSON.parse(localStorage.getItem('clienteData'));
             if (savedUser) {
@@ -1313,24 +1319,24 @@
             renderSavedReports();
             showPage('diagnostics-page');
         }
-
+    
         function logout() {
             localStorage.setItem('sesionIniciada', 'false');
             showPage('login-page');
         }
-
+    
         // Escaneo
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
-
+    
         function startScan() {
             const btn = document.getElementById('scanBtn');
             const t = translations[currentLang];
-
+    
             btn.disabled = true;
             btn.innerText = t.scanningBtn;
-
+    
             setTimeout(() => {
                 const currentData = {
                     cpu: getRandomInt(15, 85) + '%',
@@ -1345,70 +1351,70 @@
                     drv: 'OK',
                     apps: 'OK'
                 };
-
+    
                 document.getElementById('cpu-bar').style.width = currentData.cpu;
                 document.getElementById('cpu-text').innerText = `${t.usageCpu}: ${currentData.cpu}`;
                 updateBadge('cpu-status', parseInt(currentData.cpu) > 80 ? t.statusHighUse : t.statusNormal, parseInt(currentData.cpu) > 80 ? 'status-warn' : 'status-good');
-
+    
                 document.getElementById('ram-bar').style.width = currentData.ram;
                 document.getElementById('ram-text').innerText = `${t.usageRam}: ${currentData.ram}`;
                 updateBadge('ram-status', parseInt(currentData.ram) > 85 ? t.statusElevated : t.statusCorrect, parseInt(currentData.ram) > 85 ? 'status-warn' : 'status-good');
-
+    
                 document.getElementById('disk-bar').style.width = currentData.disk;
                 document.getElementById('disk-text').innerText = `${t.usageDisk}: ${currentData.disk}`;
                 updateBadge('disk-status', t.statusHealthy, 'status-good');
-
+    
                 document.getElementById('gpu-bar').style.width = currentData.gpu;
                 document.getElementById('gpu-text').innerText = `${t.usageGpu}: ${currentData.gpu}`;
                 updateBadge('gpu-status', t.statusStable, 'status-good');
-
+    
                 document.getElementById('temp-bar').style.width = parseInt(currentData.temp) + '%';
                 document.getElementById('temp-text').innerText = `${t.usageTemp}: ${currentData.temp}`;
                 updateBadge('temp-status', parseInt(currentData.temp) > 75 ? t.statusHighTemp : t.statusOptimal, parseInt(currentData.temp) > 75 ? 'status-warn' : 'status-good');
-
+    
                 updateBadge('mobo-status', t.statusOk, 'status-good');
                 updateBadge('os-status', t.statusNoErrors, 'status-good');
                 updateBadge('proc-status', t.statusOptimized, 'status-good');
                 updateBadge('sec-status', t.statusProtected, 'status-good');
                 updateBadge('drv-status', t.statusUpdated, 'status-good');
                 updateBadge('apps-status', t.statusChecked, 'status-good');
-
+    
                 saveReport(currentData);
-
+    
                 btn.disabled = false;
                 btn.innerText = t.scanBtn;
             }, 1200);
         }
-
+    
         function updateBadge(id, text, className) {
             const badge = document.getElementById(id);
             badge.innerText = text;
             badge.className = `status-badge ${className}`;
         }
-
+    
         function getStoredReports() {
             return JSON.parse(localStorage.getItem('zago_reports_history')) || {};
         }
-
+    
         function saveReport(data) {
             const reportsHistory = getStoredReports();
             const reportCount = Object.keys(reportsHistory).length + 1;
             const reportId = `RPT-${1000 + reportCount}`;
             const now = new Date();
             const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-
+    
             reportsHistory[reportId] = { date: dateStr, details: data };
             localStorage.setItem('zago_reports_history', JSON.stringify(reportsHistory));
-
+    
             renderSavedReports();
         }
-
+    
         function renderSavedReports() {
             const tableBody = document.getElementById('reportsBody');
             const reportsHistory = getStoredReports();
             const reportKeys = Object.keys(reportsHistory).reverse();
             const t = translations[currentLang];
-
+    
             if (reportKeys.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
@@ -1416,7 +1422,7 @@
                     </tr>`;
                 return;
             }
-
+    
             tableBody.innerHTML = '';
             reportKeys.forEach(reportId => {
                 const report = reportsHistory[reportId];
@@ -1431,7 +1437,7 @@
                 tableBody.appendChild(row);
             });
         }
-
+    
         function clearReportsHistory() {
             const confirmMsg = currentLang === 'es' ? '¿Estás seguro de borrar los reportes?' : (currentLang === 'fr' ? 'Êtes-vous sûr de vouloir tout effacer?' : 'Are you sure you want to clear history?');
             if (confirm(confirmMsg)) {
@@ -1439,51 +1445,51 @@
                 renderSavedReports();
             }
         }
-
+    
         function openModal(reportId) {
             const reportsHistory = getStoredReports();
             const report = reportsHistory[reportId];
             if (!report) return;
-
+    
             document.getElementById('modalTitle').innerText = `${translations[currentLang].modalTitle} #${reportId}`;
             document.getElementById('modalDate').innerText = `${report.date}`;
-
+    
             document.getElementById('m-cpu').innerText = report.details.cpu;
             document.getElementById('m-ram').innerText = report.details.ram;
             document.getElementById('m-disk').innerText = report.details.disk;
             document.getElementById('m-gpu').innerText = report.details.gpu;
             document.getElementById('m-temp').innerText = report.details.temp;
             document.getElementById('m-mobo').innerText = report.details.mobo;
-
+    
             document.getElementById('m-os').innerText = report.details.os;
             document.getElementById('m-proc').innerText = report.details.proc;
             document.getElementById('m-sec').innerText = report.details.sec;
             document.getElementById('m-drv').innerText = report.details.drv;
             document.getElementById('m-apps').innerText = report.details.apps;
-
+    
             document.getElementById('reportModal').style.display = 'flex';
         }
-
+    
         function closeModal() {
             document.getElementById('reportModal').style.display = 'none';
         }
-
+    
         // --- CHAT IA MULTILENGUAJE CON CONTEXTO ---
         function handleSendMessage(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
             const text = input.value.trim();
             if (!text) return;
-
+    
             appendMessage(text, 'user');
             input.value = '';
-
+    
             setTimeout(() => {
                 const botResponse = processQueryWithContext(text);
                 appendMessage(botResponse, 'bot');
             }, 600);
         }
-
+    
         function appendMessage(text, sender) {
             const chatMessages = document.getElementById('chatMessages');
             const msgDiv = document.createElement('div');
@@ -1492,15 +1498,15 @@
             chatMessages.appendChild(msgDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-
+    
         function processQueryWithContext(query) {
             const history = getStoredReports();
             const keys = Object.keys(history);
             const queryUpper = query.toUpperCase();
             const lang = currentLang;
-
+    
             const matchedKey = keys.find(k => queryUpper.includes(k));
-
+    
             if (matchedKey) {
                 const rpt = history[matchedKey];
                 const d = rpt.details;
@@ -1525,7 +1531,7 @@
                            `<b>Diagnóstico IA:</b> Métricas registradas correctamente.`;
                 }
             }
-
+    
             if (queryUpper.includes('LISTA') || queryUpper.includes('LIST') || queryUpper.includes('LISTE') || queryUpper.includes('REPORTES') || queryUpper.includes('REPORTS') || queryUpper.includes('RAPPORTS')) {
                 if (keys.length === 0) {
                     return lang === 'fr' ? "Aucun diagnostic trouvé." : (lang === 'en' ? "No diagnostics found." : "No se encontraron diagnósticos.");
@@ -1536,7 +1542,7 @@
                 });
                 return listText;
             }
-
+    
             if (lang === 'fr') {
                 return "Je peux analyser vos rapports enregistrés. Tapez l'ID du rapport (ex: <b>RPT-1001</b>) ou 'liste' pour voir vos rapports.";
             } else if (lang === 'en') {
@@ -1545,7 +1551,7 @@
                 return "Puedo analizar cualquier informe guardado. Escribe el ID del reporte (ej. <b>RPT-1001</b>) o 'lista' para ver tus reportes.";
             }
         }
-
+    
         // Inicialización
         window.onload = function() {
             changeLanguage(currentLang);
