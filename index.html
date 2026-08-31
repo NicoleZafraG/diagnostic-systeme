@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZAGO inc - Diagnóstico de Sistema</title>
+    <title>ZAGO inc - Outil de Diagnostic et Rapport Système</title>
     <style>
         :root {
-            --bg-color: #0f172a;
+            --bg-main: #0f172a;
             --card-bg: #1e293b;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
+            --accent-cyan: #38bdf8;
             --accent-color: #2563eb;
             --accent-hover: #1d4ed8;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --accent-purple: #a855f7;
             --status-good: #22c55e;
             --status-warn: #eab308;
             --border-color: #334155;
+            --input-bg: #0f172a;
         }
 
         * {
@@ -25,12 +30,123 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-main);
             color: var(--text-primary);
             min-height: 100vh;
         }
 
-        /* Encabezado */
+        /* --- VISTAS DE AUTENTICACIÓN (LOGIN / REGISTRO) --- */
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border-top: 4px solid var(--accent-cyan);
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-icon {
+            font-size: 2.8rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .logo-area h1 {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .logo-area p {
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-cyan);
+            color: #0f172a;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: #7dd3fc;
+        }
+
+        .auth-footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .btn-link {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.88rem;
+            margin-left: 5px;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        /* --- DASHBOARD TÉCNICO --- */
         header {
             display: flex;
             justify-content: space-between;
@@ -101,12 +217,33 @@
         }
 
         .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name-badge {
             background-color: var(--accent-color);
             padding: 0.5rem 1rem;
             border-radius: 20px;
+            font-size: 0.9rem;
         }
 
-        /* Contenedor Principal */
+        .btn-logout {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .btn-logout:hover {
+            background-color: #dc2626;
+        }
+
         main {
             max-width: 1200px;
             margin: 2rem auto;
@@ -148,7 +285,7 @@
             display: inline-block;
         }
 
-        /* Grid de Componentes */
+        /* Grid y Card Styling */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -237,7 +374,7 @@
         .btn-view {
             background-color: transparent;
             border: 1px solid var(--accent-color);
-            color: var(--accent-color);
+            color: var(--accent-cyan);
             padding: 0.3rem 0.8rem;
             border-radius: 4px;
             cursor: pointer;
@@ -249,7 +386,7 @@
             color: white;
         }
 
-        /* Modal / Ventana Emergente */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -296,7 +433,7 @@
         }
 
         .detail-group h4 {
-            color: var(--accent-color);
+            color: var(--accent-cyan);
             margin-bottom: 0.5rem;
         }
 
@@ -307,187 +444,256 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 0.95rem;
         }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Encabezado -->
-    <header>
-        <div class="logo">ZAGO inc</div>
-        <nav>
-            <a href="#">Inicio</a>
-            <div class="dropdown">
-                <button class="dropbtn">Opciones ▾</button>
-                <div class="dropdown-content">
-                    <a href="#hardware">Hardware</a>
-                    <a href="#software">Software</a>
-                </div>
-            </div>
-            <a href="#reports">Reports</a>
-            <a href="#">Support</a>
-        </nav>
-        <div class="user-profile">
-            <span>Mi Cuenta</span>
-        </div>
-    </header>
-
-    <!-- Contenido Principal -->
-    <main>
-        <div class="dashboard-header">
-            <h1>Panel de Diagnóstico Técnico</h1>
-            <p style="color: var(--text-secondary); margin-top: 0.5rem;">Haz clic en el botón para evaluar hardware y software en tiempo real.</p>
-            <button id="scanBtn" class="btn-scan" onclick="startScan()">Start Scan</button>
-        </div>
-
-        <!-- Sección Hardware -->
-        <h2 id="hardware" class="section-title">Componentes de Hardware</h2>
-        <div class="grid-container">
-            <div class="card">
-                <div>
-                    <div class="card-header">
-                        <span class="card-title">Procesador (CPU)</span>
-                        <span id="cpu-status" class="status-badge">Pendiente</span>
-                    </div>
-                    <p class="card-description">Revisa la velocidad, el uso actual y la estabilidad del chip principal cuando trabaja al máximo.</p>
-                </div>
-                <div>
-                    <small id="cpu-text" style="color: var(--text-secondary);">Uso de CPU: --%</small>
-                    <div class="metric-bar"><div id="cpu-bar" class="metric-fill"></div></div>
-                </div>
+    <div id="login-page" class="auth-wrapper">
+        <div class="auth-container">
+            <div class="logo-area">
+                <span class="logo-icon">🛡️</span>
+                <h1>ZAGO inc</h1>
+                <p>SYSTEM DIAGNOSTICS & REPORTING</p>
             </div>
 
-            <div class="card">
-                <div>
-                    <div class="card-header">
-                        <span class="card-title">Memoria RAM</span>
-                        <span id="ram-status" class="status-badge">Pendiente</span>
-                    </div>
-                    <p class="card-description">Comprueba si hay errores de lectura o escritura en los módulos de memoria temporal.</p>
+            <form id="form-login">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="ej. usuario@empresa.com" required>
                 </div>
-                <div>
-                    <small id="ram-text" style="color: var(--text-secondary);">Uso de RAM: --%</small>
-                    <div class="metric-bar"><div id="ram-bar" class="metric-fill"></div></div>
-                </div>
-            </div>
 
-            <div class="card">
-                <div>
-                    <div class="card-header">
-                        <span class="card-title">Almacenamiento (SSD/HDD)</span>
-                        <span id="disk-status" class="status-badge">Pendiente</span>
-                    </div>
-                    <p class="card-description">Evalúa la salud general, los sectores dañados y la velocidad de lectura de tus unidades de datos.</p>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
                 </div>
-                <div>
-                    <small id="disk-text" style="color: var(--text-secondary);">Espacio usado: --%</small>
-                    <div class="metric-bar"><div id="disk-bar" class="metric-fill"></div></div>
-                </div>
-            </div>
 
-            <div class="card">
-                <div>
-                    <div class="card-header">
-                        <span class="card-title">Tarjeta Gráfica (GPU)</span>
-                        <span id="gpu-status" class="status-badge">Pendiente</span>
-                    </div>
-                    <p class="card-description">Verifica el funcionamiento del chip de video y su memoria dedicada al mostrar imágenes pesadas o juegos.</p>
-                </div>
-                <div>
-                    <small id="gpu-text" style="color: var(--text-secondary);">Carga de GPU: --%</small>
-                    <div class="metric-bar"><div id="gpu-bar" class="metric-fill"></div></div>
-                </div>
-            </div>
+                <button type="submit" class="btn-submit">Iniciar Sesión</button>
+            </form>
 
-            <div class="card">
-                <div>
-                    <div class="card-header">
-                        <span class="card-title">Placa Base y Puertos</span>
-                        <span id="mobo-status" class="status-badge">Pendiente</span>
-                    </div>
-                    <p class="card-description">Comprueba que la tarjeta principal reconozca todos los elementos y que los puertos USB o de video funcionen bien.</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <div>
-                    <div class="card-header">
-                        <span class="card-title">Temperaturas y Ventilación</span>
-                        <span id="temp-status" class="status-badge">Pendiente</span>
-                    </div>
-                    <p class="card-description">Mide el calor de los componentes y la velocidad de los ventiladores para evitar apagones por exceso de temperatura.</p>
-                </div>
-                <div>
-                    <small id="temp-text" style="color: var(--text-secondary);">Temperatura CPU: --°C</small>
-                    <div class="metric-bar"><div id="temp-bar" class="metric-fill"></div></div>
-                </div>
+            <div class="auth-footer">
+                ¿No tienes una cuenta?
+                <button class="btn-link" onclick="showPage('register-page')">Create Account</button>
             </div>
         </div>
+    </div>
 
-        <!-- Sección Software -->
-        <h2 id="software" class="section-title">Análisis de Software</h2>
-        <div class="grid-container">
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Sistema Operativo</span>
-                    <span id="os-status" class="status-badge">Pendiente</span>
-                </div>
-                <p class="card-description">Revisar la integridad de los archivos del sistema, las actualizaciones pendientes y el registro de eventos en busca de fallos críticos.</p>
+    <div id="register-page" class="auth-wrapper hidden">
+        <div class="auth-container">
+            <div class="logo-area">
+                <span class="logo-icon">👤</span>
+                <h1>Crear Cuenta</h1>
+                <p>REGISTRO DE NUEVO CLIENTE</p>
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Rendimiento y Procesos</span>
-                    <span id="proc-status" class="status-badge">Pendiente</span>
+            <form id="form-register">
+                <div class="form-group">
+                    <label for="reg-nombre">Nombre</label>
+                    <input type="text" id="reg-nombre" placeholder="Juan" required>
                 </div>
-                <p class="card-description">Analizar el uso excesivo de la memoria RAM, el procesador o el disco por parte de programas en segundo plano.</p>
-            </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Seguridad</span>
-                    <span id="sec-status" class="status-badge">Pendiente</span>
+                <div class="form-group">
+                    <label for="reg-apellido">Apellido</label>
+                    <input type="text" id="reg-apellido" placeholder="Pérez" required>
                 </div>
-                <p class="card-description">Comprobar la presencia de virus, programas maliciosos (malware) y el estado activo del antivirus o cortafuegos.</p>
-            </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Controladores (Drivers)</span>
-                    <span id="drv-status" class="status-badge">Pendiente</span>
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" placeholder="juan.perez@email.com" required>
                 </div>
-                <p class="card-description">Verificar que los controladores de video, red y audio estén actualizados y sin conflictos de hardware.</p>
-            </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Programas Instalados</span>
-                    <span id="apps-status" class="status-badge">Pendiente</span>
+                <div class="form-group">
+                    <label for="reg-password">Contraseña</label>
+                    <input type="password" id="reg-password" placeholder="••••••••" required>
                 </div>
-                <p class="card-description">Identificar aplicaciones obsoletas, software basura (bloatware) o conflictos entre programas que afecten el arranque.</p>
+
+                <button type="submit" class="btn-submit" style="background-color: var(--accent-green); color: #0f172a;">Crear Cuenta y Continuar</button>
+            </form>
+
+            <div class="auth-footer">
+                ¿Ya tienes una cuenta?
+                <button class="btn-link" onclick="showPage('login-page')">Iniciar Sesión</button>
             </div>
         </div>
+    </div>
 
-        <!-- Sección Historial de Reportes -->
-        <h2 id="reports" class="section-title">Reports (Historial de Diagnósticos)</h2>
-        <table class="reports-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Fecha y Hora</th>
-                    <th>Estado Hardware</th>
-                    <th>Estado Software</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="reportsBody">
-                <tr>
-                    <td colspan="5" style="text-align: center; color: var(--text-secondary);">No hay diagnósticos registrados. Haz clic en "Start Scan".</td>
-                </tr>
-            </tbody>
-        </table>
-    </main>
+    <div id="diagnostics-page" class="hidden">
+        <header>
+            <div class="logo">ZAGO inc</div>
+            <nav>
+                <a href="#">Inicio</a>
+                <div class="dropdown">
+                    <button class="dropbtn">Opciones ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#hardware">Hardware</a>
+                        <a href="#software">Software</a>
+                    </div>
+                </div>
+                <a href="#reports">Reports</a>
+                <a href="#">Support</a>
+            </nav>
+            <div class="user-profile">
+                <div id="user-display" class="user-name-badge">Mi Cuenta</div>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </header>
 
-    <!-- Modal para ver el detalle de cada reporte -->
+        <main>
+            <div class="dashboard-header">
+                <h1>Panel de Diagnóstico Técnico</h1>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">Haz clic en el botón para evaluar hardware y software en tiempo real.</p>
+                <button id="scanBtn" class="btn-scan" onclick="startScan()">Start Scan</button>
+            </div>
+
+            <h2 id="hardware" class="section-title">Componentes de Hardware</h2>
+            <div class="grid-container">
+                <div class="card">
+                    <div>
+                        <div class="card-header">
+                            <span class="card-title">Procesador (CPU)</span>
+                            <span id="cpu-status" class="status-badge">Pendiente</span>
+                        </div>
+                        <p class="card-description">Revisa la velocidad, el uso actual y la estabilidad del chip principal cuando trabaja al máximo.</p>
+                    </div>
+                    <div>
+                        <small id="cpu-text" style="color: var(--text-secondary);">Uso de CPU: --%</small>
+                        <div class="metric-bar"><div id="cpu-bar" class="metric-fill"></div></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <div class="card-header">
+                            <span class="card-title">Memoria RAM</span>
+                            <span id="ram-status" class="status-badge">Pendiente</span>
+                        </div>
+                        <p class="card-description">Comprueba si hay errores de lectura o escritura en los módulos de memoria temporal.</p>
+                    </div>
+                    <div>
+                        <small id="ram-text" style="color: var(--text-secondary);">Uso de RAM: --%</small>
+                        <div class="metric-bar"><div id="ram-bar" class="metric-fill"></div></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <div class="card-header">
+                            <span class="card-title">Almacenamiento (SSD/HDD)</span>
+                            <span id="disk-status" class="status-badge">Pendiente</span>
+                        </div>
+                        <p class="card-description">Evalúa la salud general, los sectores dañados y la velocidad de lectura de tus unidades de datos.</p>
+                    </div>
+                    <div>
+                        <small id="disk-text" style="color: var(--text-secondary);">Espacio usado: --%</small>
+                        <div class="metric-bar"><div id="disk-bar" class="metric-fill"></div></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <div class="card-header">
+                            <span class="card-title">Tarjeta Gráfica (GPU)</span>
+                            <span id="gpu-status" class="status-badge">Pendiente</span>
+                        </div>
+                        <p class="card-description">Verifica el funcionamiento del chip de video y su memoria dedicada al mostrar imágenes pesadas o juegos.</p>
+                    </div>
+                    <div>
+                        <small id="gpu-text" style="color: var(--text-secondary);">Carga de GPU: --%</small>
+                        <div class="metric-bar"><div id="gpu-bar" class="metric-fill"></div></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <div class="card-header">
+                            <span class="card-title">Placa Base y Puertos</span>
+                            <span id="mobo-status" class="status-badge">Pendiente</span>
+                        </div>
+                        <p class="card-description">Comprueba que la tarjeta principal reconozca todos los elementos y que los puertos USB o de video funcionen bien.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <div class="card-header">
+                            <span class="card-title">Temperaturas y Ventilación</span>
+                            <span id="temp-status" class="status-badge">Pendiente</span>
+                        </div>
+                        <p class="card-description">Mide el calor de los componentes y la velocidad de los ventiladores para evitar apagones por exceso de temperatura.</p>
+                    </div>
+                    <div>
+                        <small id="temp-text" style="color: var(--text-secondary);">Temperatura CPU: --°C</small>
+                        <div class="metric-bar"><div id="temp-bar" class="metric-fill"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="software" class="section-title">Análisis de Software</h2>
+            <div class="grid-container">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Sistema Operativo</span>
+                        <span id="os-status" class="status-badge">Pendiente</span>
+                    </div>
+                    <p class="card-description">Revisar la integridad de los archivos del sistema, las actualizaciones pendientes y el registro de eventos en busca de fallos críticos.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Rendimiento y Procesos</span>
+                        <span id="proc-status" class="status-badge">Pendiente</span>
+                    </div>
+                    <p class="card-description">Analizar el uso excesivo de la memoria RAM, el procesador o el disco por parte de programas en segundo plano.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Seguridad</span>
+                        <span id="sec-status" class="status-badge">Pendiente</span>
+                    </div>
+                    <p class="card-description">Comprobar la presencia de virus, programas maliciosos (malware) y el estado activo del antivirus o cortafuegos.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Controladores (Drivers)</span>
+                        <span id="drv-status" class="status-badge">Pendiente</span>
+                    </div>
+                    <p class="card-description">Verificar que los controladores de video, red y audio estén actualizados y sin conflictos de hardware.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Programas Instalados</span>
+                        <span id="apps-status" class="status-badge">Pendiente</span>
+                    </div>
+                    <p class="card-description">Identificar aplicaciones obsoletas, software basura (bloatware) o conflictos entre programas que afecten el arranque.</p>
+                </div>
+            </div>
+
+            <h2 id="reports" class="section-title">Reports (Historial de Diagnósticos)</h2>
+            <table class="reports-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha y Hora</th>
+                        <th>Estado Hardware</th>
+                        <th>Estado Software</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="reportsBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary);">No hay diagnósticos registrados. Haz clic en "Start Scan".</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
     <div id="reportModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -519,9 +725,67 @@
 
     <script>
         let reportCount = 0;
-        // Objeto para almacenar los datos históricos de cada escaneo
         const reportsHistory = {};
 
+        // Cambiar de vista (Login, Registro, Dashboard)
+        function showPage(pageId) {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('register-page').classList.add('hidden');
+            document.getElementById('diagnostics-page').classList.add('hidden');
+
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+
+        // Registro de Usuario
+        document.getElementById('form-register').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const userObj = {
+                nombre: document.getElementById('reg-nombre').value,
+                apellido: document.getElementById('reg-apellido').value,
+                email: document.getElementById('reg-email').value,
+                password: document.getElementById('reg-password').value
+            };
+
+            localStorage.setItem('clienteData', JSON.stringify(userObj));
+            localStorage.setItem('sesionIniciada', 'true');
+
+            alert('¡Cuenta creada exitosamente!');
+            cargarDashboard();
+        });
+
+        // Inicio de Sesión
+        document.getElementById('form-login').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const emailInput = document.getElementById('login-email').value;
+            const passInput = document.getElementById('login-password').value;
+            const savedUser = JSON.parse(localStorage.getItem('clienteData'));
+
+            if (savedUser && savedUser.email === emailInput && savedUser.password === passInput) {
+                localStorage.setItem('sesionIniciada', 'true');
+                cargarDashboard();
+            } else {
+                alert('Email o contraseña incorrectos. Si no tienes cuenta, presiona "Create Account".');
+            }
+        });
+
+        // Cargar Dashboard
+        function cargarDashboard() {
+            const savedUser = JSON.parse(localStorage.getItem('clienteData'));
+            if (savedUser) {
+                document.getElementById('user-display').innerText = `${savedUser.nombre} ${savedUser.apellido}`;
+            }
+            showPage('diagnostics-page');
+        }
+
+        // Cerrar Sesión
+        function logout() {
+            localStorage.setItem('sesionIniciada', 'false');
+            showPage('login-page');
+        }
+
+        // Lógica de Escaneo de Diagnóstico
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
@@ -532,7 +796,6 @@
             btn.innerText = "Escaneando...";
 
             setTimeout(() => {
-                // Generar los resultados
                 const currentData = {
                     cpu: getRandomInt(15, 85) + '%',
                     ram: getRandomInt(30, 90) + '%',
@@ -547,7 +810,7 @@
                     apps: 'Sin programas conflictivos'
                 };
 
-                // Actualizar interfaz actual
+                // Actualizar interfaz
                 document.getElementById('cpu-bar').style.width = currentData.cpu;
                 document.getElementById('cpu-text').innerText = `Uso de CPU: ${currentData.cpu}`;
                 updateBadge('cpu-status', parseInt(currentData.cpu) > 80 ? 'Alto Uso' : 'Normal', parseInt(currentData.cpu) > 80 ? 'status-warn' : 'status-good');
@@ -575,7 +838,6 @@
                 updateBadge('drv-status', 'Actualizados', 'status-good');
                 updateBadge('apps-status', 'Revisado', 'status-good');
 
-                // Guardar y agregar a la tabla
                 saveReport(currentData);
 
                 btn.disabled = false;
@@ -598,7 +860,6 @@
             const now = new Date();
             const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
 
-            // Guardar datos en el objeto global usando el ID como clave
             reportsHistory[reportId] = { date: dateStr, details: data };
 
             const row = document.createElement('tr');
@@ -620,7 +881,6 @@
             document.getElementById('modalTitle').innerText = `Reporte #${reportId}`;
             document.getElementById('modalDate').innerText = `Fecha de evaluación: ${report.date}`;
 
-            // Llenar datos de hardware
             document.getElementById('m-cpu').innerText = report.details.cpu;
             document.getElementById('m-ram').innerText = report.details.ram;
             document.getElementById('m-disk').innerText = report.details.disk;
@@ -628,7 +888,6 @@
             document.getElementById('m-temp').innerText = report.details.temp;
             document.getElementById('m-mobo').innerText = report.details.mobo;
 
-            // Llenar datos de software
             document.getElementById('m-os').innerText = report.details.os;
             document.getElementById('m-proc').innerText = report.details.proc;
             document.getElementById('m-sec').innerText = report.details.sec;
@@ -641,6 +900,14 @@
         function closeModal() {
             document.getElementById('reportModal').style.display = 'none';
         }
+
+        // Verificar sesión al cargar
+        window.onload = function() {
+            const sesionActiva = localStorage.getItem('sesionIniciada');
+            if (sesionActiva === 'true') {
+                cargarDashboard();
+            }
+        };
     </script>
 </body>
 </html>
