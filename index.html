@@ -425,7 +425,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* Animación de flotación para el Robot */
         .robot-img {
             width: 140px;
             height: 140px;
@@ -473,11 +472,11 @@
         }
 
         .message {
-            max-width: 75%;
+            max-width: 80%;
             padding: 0.8rem 1.2rem;
             border-radius: 12px;
             font-size: 0.95rem;
-            line-height: 1.4;
+            line-height: 1.5;
             word-wrap: break-word;
         }
 
@@ -861,17 +860,17 @@
                     <circle cx="100" cy="162" r="6" fill="#22c55e"/>
                 </svg>
                 <br>
-                <div class="robot-greeting">👋 ¡Hola! Soy ZAGO-Bot, tu asistente virtual inteligente.</div>
+                <div class="robot-greeting">👋 ¡Hola! Soy ZAGO-Bot. Tengo acceso completo a todos los diagnósticos de tu cuenta.</div>
             </div>
 
             <div class="chat-box">
                 <div id="chatMessages" class="chat-messages">
                     <div class="message bot">
-                        ¡Hola! ¿En qué puedo ayudarte hoy? Puedo responder tus dudas sobre el escaneo de hardware, fallos de software o cómo interpretar tus reportes.
+                        ¡Hola! Puedo analizar cualquiera de tus diagnósticos guardados. Escribe el ID del reporte (ej. <b>RPT-1001</b>) o pregúntame por el estado general de tu equipo.
                     </div>
                 </div>
                 <form id="chatForm" class="chat-input-area" onsubmit="handleSendMessage(event)">
-                    <input type="text" id="userInput" placeholder="Escribe tu consulta técnica aquí..." autocomplete="off" required>
+                    <input type="text" id="userInput" placeholder="Ej: Analiza RPT-1001 o ¿cómo está mi CPU?" autocomplete="off" required>
                     <button type="submit" class="btn-send">Enviar</button>
                 </form>
             </div>
@@ -908,7 +907,7 @@
     </div>
 
     <script>
-        // Gestor de navegación entre vistas
+        // Gestor de navegación
         function showPage(pageId) {
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('register-page').classList.add('hidden');
@@ -956,7 +955,7 @@
                 localStorage.setItem('sesionIniciada', 'true');
                 cargarDashboard();
             } else {
-                alert('Email o contraseña incorrectos. Si no tienes cuenta, presiona "Create Account".');
+                alert('Email o contraseña incorrectos.');
             }
         });
 
@@ -1124,7 +1123,7 @@
             document.getElementById('reportModal').style.display = 'none';
         }
 
-        // --- LÓGICA DEL CHAT DE SOPORTE VIRTUAL CON IA ---
+        // --- LÓGICA DEL CHAT CON CONOCIMIENTO COMPLETO DE DIAGNÓSTICOS ---
         function handleSendMessage(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
@@ -1134,46 +1133,100 @@
             appendMessage(text, 'user');
             input.value = '';
 
-            // Simular tiempo de respuesta de la IA
             setTimeout(() => {
-                const botResponse = generateAIResponse(text);
+                const botResponse = processQueryWithContext(text);
                 appendMessage(botResponse, 'bot');
-            }, 800);
+            }, 600);
         }
 
         function appendMessage(text, sender) {
             const chatMessages = document.getElementById('chatMessages');
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${sender}`;
-            msgDiv.innerText = text;
+            msgDiv.innerHTML = text; // Permite formato HTML como <b>, <br>
             chatMessages.appendChild(msgDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Motor básico de respuestas automáticas estructuradas (IA Simil)
-        function generateAIResponse(query) {
-            const q = query.toLowerCase();
+        // Procesador inteligente con acceso a los datos del localStorage
+        function processQueryWithContext(query) {
+            const history = getStoredReports();
+            const keys = Object.keys(history);
+            const queryUpper = query.toUpperCase();
 
-            if (q.includes('lent') || q.includes('lenta') || q.includes('lento') || q.includes('ram')) {
-                return "Si tu sistema está lento, revisa la sección 'Memoria RAM' y 'Rendimiento y Procesos'. Te sugiero cerrar aplicaciones pesadas en segundo plano o reiniciar el equipo.";
-            }
-            if (q.includes('temperatura') || q.includes('caliente') || q.includes('calor') || q.includes('ventilador')) {
-                return "Una temperatura de CPU mayor a 75°C se considera elevada. Asegúrate de que las rejillas de ventilación estén limpias y sin obstrucciones de polvo.";
-            }
-            if (q.includes('scan') || q.includes('escanear') || q.includes('escaneo') || q.includes('iniciar')) {
-                return "Para iniciar una nueva evaluación, dirígete a la pestaña 'Inicio' y haz clic en el botón azul 'Start Scan'.";
-            }
-            if (q.includes('reporte') || q.includes('historial') || q.includes('guardar')) {
-                return "Todos tus análisis se guardan automáticamente en la tabla 'Reports' en la parte inferior de la página de inicio. Desde allí puedes hacer clic en 'Ver Detalle'.";
-            }
-            if (q.includes('hola') || q.includes('buenas')) {
-                return "¡Hola! Estoy listo para responder tus preguntas técnicas sobre ZAGO inc. ¿Qué problema estás experimentando?";
+            // 1. Buscar si el usuario escribió un ID específico (ej. RPT-1001)
+            const matchedKey = keys.find(k => queryUpper.includes(k));
+
+            if (matchedKey) {
+                const rpt = history[matchedKey];
+                const d = rpt.details;
+                const cpuVal = parseInt(d.cpu);
+                const ramVal = parseInt(d.ram);
+                const tempVal = parseInt(d.temp);
+
+                let statusMsg = "✅ El sistema funcionaba de manera óptima.";
+                if (cpuVal > 80 || ramVal > 85 || tempVal > 75) {
+                    statusMsg = "⚠️ Se identificaron alertas de alto consumo o temperatura en este diagnóstico.";
+                }
+
+                return `<b>Análisis de ${matchedKey} (${rpt.date}):</b><br>` +
+                       `• <b>CPU:</b> ${d.cpu} | <b>RAM:</b> ${d.ram}<br>` +
+                       `• <b>Disco:</b> ${d.disk} | <b>GPU:</b> ${d.gpu}<br>` +
+                       `• <b>Temperatura CPU:</b> ${d.temp}<br>` +
+                       `• <b>Seguridad:</b> ${d.sec}<br><br>` +
+                       `<b>Diagnóstico IA:</b> ${statusMsg}`;
             }
 
-            return "Entiendo tu consulta sobre: '" + query + "'. Para darte una recomendación exacta, asegúrate de correr un diagnóstico completo con 'Start Scan' y revisar los valores de tus componentes.";
+            // 2. Solicitud de lista de reportes
+            if (queryUpper.includes('LISTA') || queryUpper.includes('TODOS') || queryUpper.includes('REPORTES')) {
+                if (keys.length === 0) {
+                    return "Aún no tienes ningún diagnóstico registrado en esta cuenta. Ve al inicio y presiona <b>Start Scan</b>.";
+                }
+                let listText = "<b>Tus diagnósticos registrados son:</b><br>";
+                keys.forEach(k => {
+                    listText += `• <b>${k}</b> - Fecha: ${history[k].date}<br>`;
+                });
+                listText += "<br>Puedes escribir <i>'Analiza " + keys[0] + "'</i> para ver el detalle de cualquiera de ellos.";
+                return listText;
+            }
+
+            // 3. Resumen de rendimiento general
+            if (queryUpper.includes('RESUMEN') || queryUpper.includes('ESTADO GENERAL') || queryUpper.includes('EQUIPO')) {
+                if (keys.length === 0) {
+                    return "No he encontrado reportes previos en tu cuenta para hacer una evaluación.";
+                }
+                const lastKey = keys[keys.length - 1];
+                const lastRpt = history[lastKey].details;
+                return `<b>Evaluación General de tu Sistema (Basado en ${keys.length} reporte(s)):</b><br>` +
+                       `• Último análisis realizado: <b>${lastKey}</b><br>` +
+                       `• CPU reciente: <b>${lastRpt.cpu}</b><br>` +
+                       `• Memoria RAM: <b>${lastRpt.ram}</b><br>` +
+                       `• Estado de Seguridad: <b>${lastRpt.sec}</b><br><br>` +
+                       `En general, tu equipo se encuentra en buenas condiciones operativas.`;
+            }
+
+            // 4. Preguntas por componentes
+            if (queryUpper.includes('CPU') || queryUpper.includes('PROCESADOR')) {
+                if (keys.length > 0) {
+                    const lastKey = keys[keys.length - 1];
+                    return `En tu último reporte (<b>${lastKey}</b>), el uso del CPU estuvo en <b>${history[lastKey].details.cpu}</b> y la temperatura en <b>${history[lastKey].details.temp}</b>.`;
+                }
+                return "El uso de CPU óptimo debe mantenerse por debajo del 80%. Haz un escaneo para medir el valor actual.";
+            }
+
+            if (queryUpper.includes('RAM') || queryUpper.includes('MEMORIA')) {
+                if (keys.length > 0) {
+                    const lastKey = keys[keys.length - 1];
+                    return `En el reporte <b>${lastKey}</b>, la memoria RAM registrada estuvo en <b>${history[lastKey].details.ram}</b> de capacidad usada.`;
+                }
+                return "Si notas lentitud, la RAM suele ser la causa si supera el 85% de uso continuo.";
+            }
+
+            // Respuestas generales
+            return "Puedo darte soporte sobre cualquier informe guardado. Indícame el código del reporte (como <b>RPT-1001</b>) o escribe <i>'lista de reportes'</i> para ver cuáles tienes disponibles.";
         }
 
-        // Estado inicial al cargar
+        // Estado inicial
         window.onload = function() {
             const sesionActiva = localStorage.getItem('sesionIniciada');
             if (sesionActiva === 'true') {
